@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesabım - TeknoStore</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,800" rel="stylesheet">
+    <style>
+        /* Profil Sayfasına Özel Basit CSS */
+        .profil-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            min-height: 500px;
+        }
+
+        .profil-sidebar {
+            width: 250px;
+            background: #f8f9fa;
+            border-right: 1px solid #eee;
+            padding: 20px;
+        }
+
+        .profil-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .profil-menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .profil-menu li {
+            margin-bottom: 10px;
+        }
+
+        .profil-menu a {
+            display: block;
+            padding: 10px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .profil-menu a:hover,
+        .profil-menu a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .profil-info-group {
+            margin-bottom: 20px;
+        }
+
+        .profil-info-group label {
+            font-weight: bold;
+            display: block;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .profil-info-group p {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+
+        .cikis-btn {
+            margin-top: 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container-header"
+            style="padding: 0 20px; height: 80px; display: flex; align-items: center; justify-content: space-between; max-width: 1280px; margin: 0 auto;">
+            <div class="logo"><a href="index.html" style="text-decoration:none;">
+                    <h1>TeknoStore</h1>
+                </a></div>
+            <nav><a href="index.html" style="color: #333; font-weight: 600;">Ana Sayfa</a></nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="profil-container">
+            <div class="profil-sidebar">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <i class="fa fa-user-circle" style="font-size: 60px; color: var(--primary-color);"></i>
+                    <h3 id="sidebar-isim" style="margin-top: 10px;">Kullanıcı</h3>
+                </div>
+                <nav class="profil-menu">
+                    <ul>
+                        <li><a href="#" class="active"><i class="fa fa-user"></i> Bilgilerim</a></li>
+                        <li><a href="#"><i class="fa fa-box"></i> Siparişlerim</a></li>
+                        <li><a href="#"><i class="fa fa-map-marker-alt"></i> Adreslerim</a></li>
+                    </ul>
+                </nav>
+                <button onclick="cikisYap()" class="cikis-btn"><i class="fa fa-sign-out-alt"></i> Çıkış Yap</button>
+            </div>
+
+            <div class="profil-content">
+                <h2
+                    style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; color: var(--primary-color);">
+                    Kişisel Bilgiler</h2>
+
+                <div class="profil-info-group">
+                    <label>Ad Soyad</label>
+                    <p id="profil-ad">Yükleniyor...</p>
+                </div>
+
+                <div class="profil-info-group">
+                    <label>E-posta Adresi</label>
+                    <p id="profil-email">Yükleniyor...</p>
+                </div>
+
+                <div class="profil-info-group">
+                    <label>Telefon Numarası</label>
+                    <p id="profil-telefon">Yükleniyor...</p>
+                </div>
+
+                <div class="profil-info-group">
+                    <label>Kayıtlı Adres</label>
+                    <p id="profil-adres">Yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p style="text-align: center; padding: 20px;">&copy; 2025 TeknoStore.</p>
+    </footer>
+
+    <script src="../JS/script.js"></script>
+    <script>
+        // Sayfa Yüklendiğinde Bilgileri Doldur
+        document.addEventListener("DOMContentLoaded", () => {
+            const kullaniciVerisi = localStorage.getItem("kullanici");
+
+            if (kullaniciVerisi) {
+                const kullanici = JSON.parse(kullaniciVerisi);
+
+                document.getElementById("sidebar-isim").innerText = kullanici.ad;
+                document.getElementById("profil-ad").innerText = kullanici.ad;
+                document.getElementById("profil-email").innerText = kullanici.email;
+                document.getElementById("profil-telefon").innerText = kullanici.telefon;
+                document.getElementById("profil-adres").innerText = kullanici.adres;
+            } else {
+                // Eğer giriş yapmadan buraya geldiyse Login'e at
+                alert("Önce giriş yapmalısınız!");
+                window.location.href = "login.html";
+            }
+        });
+    </script>
+
+</body>
+
+</html>

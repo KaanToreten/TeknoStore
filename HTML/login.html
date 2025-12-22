@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap / Kayıt Ol - TeknoStore</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,800" rel="stylesheet">
+</head>
+
+<body>
+
+    <header>
+        <div class="container-header">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none;">
+                    <h1>TeknoStore</h1>
+                </a>
+            </div>
+            <nav>
+                <a href="index.html" style="color: var(--text-primary); font-weight: 600;">Ana Sayfa</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="auth-wrapper">
+        <div class="container" id="container">
+
+            <div class="form-container sign-up-container">
+                <form id="form-kayit" onsubmit="return kayitKontrol(event)">
+                    <h1>Hesap Oluştur</h1>
+
+                    <div class="social-container">
+                        <a href="#" class="social"><i class="fab fa-apple"></i></a>
+                        <a href="#" class="social"><i class="fab fa-google"></i></a>
+                        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+
+                    <span>veya e-posta ile kayıt ol</span>
+
+                    <input type="text" placeholder="Ad Soyad" required />
+                    <input type="email" placeholder="E-posta" required />
+
+                    <input type="password" id="reg-pass" placeholder="Şifre (En az 1 Büyük Harf, 1 Sayı)" required />
+                    <input type="password" id="reg-pass-confirm" placeholder="Şifre Tekrar" required />
+
+                    <input type="text" name="telefonlar" placeholder="Telefon" />
+                    <small style="font-size: 10px; color: #d97706; margin-bottom: 10px; align-self: flex-start;">* 1NF
+                        Kuralı: Virgülle çoklu numara girilebilir.</small>
+
+                    <button type="submit">Kayıt Ol</button>
+                </form>
+            </div>
+
+            <div class="form-container sign-in-container">
+                <form onsubmit="girisYap(event, 'giris')">
+                    <h1>Giriş Yap</h1>
+
+                    <div class="social-container">
+                        <a href="#" class="social"><i class="fab fa-apple"></i></a>
+                        <a href="#" class="social"><i class="fab fa-google"></i></a>
+                        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+
+                    <span>veya hesabını kullan</span>
+                    <input type="email" placeholder="E-posta" />
+                    <input type="password" placeholder="Şifre" />
+                    <a href="#">Şifremi Unuttum?</a>
+                    <button>Giriş Yap</button>
+                </form>
+            </div>
+
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h1>Tekrar Hoşgeldin!</h1>
+                        <p>Zaten bir hesabın var mı? Giriş yaparak devam et.</p>
+                        <button class="ghost" id="signIn">Giriş Yap</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h1>Merhaba!</h1>
+                        <p>Henüz hesabın yok mu? Hemen aramıza katıl.</p>
+                        <button class="ghost" id="signUp">Kayıt Ol</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TeknoStore. Web Programlama Dersi Projesi.</p>
+    </footer>
+
+    <script src="../JS/script.js"></script>
+
+</body>
+
+</html>

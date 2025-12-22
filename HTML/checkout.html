@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ödeme - TeknoStore</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none;">
+                    <h1>TeknoStore</h1>
+                </a>
+            </div>
+            <div class="arama-kutusu">
+                <input type="text" placeholder="Ürün ara...">
+                <button type="button"><i class="fa fa-search"></i></button>
+            </div>
+            <div class="sepet-alani" style="display: flex; gap: 10px;">
+                <a href="account.html" class="sepet-btn"
+                    style="background-color: var(--light-bg); border-color: var(--border-color); color: var(--text-primary);">
+                    <i class="fa fa-user"></i> Hesap
+                </a>
+                <a href="cart.html" class="sepet-btn">
+                    <i class="fa fa-shopping-cart"></i> Sepetim
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container odeme-container">
+
+        <div class="adres-formu">
+            <h2>Teslimat ve Ödeme Bilgileri</h2>
+            <form action="#" onsubmit="alert('Siparişiniz alınmıştır!'); return false;">
+
+                <div class="form-grup-satir">
+                    <div class="form-grup">
+                        <label>Ad</label>
+                        <input type="text" required>
+                    </div>
+                    <div class="form-grup">
+                        <label>Soyad</label>
+                        <input type="text" required>
+                    </div>
+                </div>
+
+                <div class="form-grup">
+                    <label>E-posta</label>
+                    <input type="email" required>
+                </div>
+
+                <div class="form-grup">
+                    <label>Adres</label>
+                    <textarea rows="3" required></textarea>
+                </div>
+
+                <div class="form-grup">
+                    <label>Kart Numarası (Mock)</label>
+                    <input type="text" placeholder="0000 0000 0000 0000">
+                </div>
+
+                <div class="form-grup-satir">
+                    <div class="form-grup">
+                        <label>SKT</label>
+                        <input type="text" placeholder="Ay/Yıl">
+                    </div>
+                    <div class="form-grup">
+                        <label>CVC</label>
+                        <input type="text" placeholder="123">
+                    </div>
+                </div>
+
+                <button type="submit" class="siparis-btn">Siparişi Tamamla</button>
+
+            </form>
+        </div>
+
+        <div class="sepet-ozeti">
+            <h3>Sipariş Özeti</h3>
+            <div class="ozet-satir">
+                <span>Ara Toplam</span>
+                <span>40.998 TL</span>
+            </div>
+            <div class="ozet-satir">
+                <span>Kargo</span>
+                <span>0 TL</span>
+            </div>
+            <hr>
+            <div class="ozet-satir toplam">
+                <span>Toplam</span>
+                <span>40.998 TL</span>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2024 TeknoStore. Web Programlama Dersi Projesi.</p>
+    </footer>
+
+    <script src="../JS/script.js"></script>
+
+</body>
+
+</html>

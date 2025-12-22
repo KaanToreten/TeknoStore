@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tüm Ürünler - TeknoStore</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none;">
+                    <h1>TeknoStore</h1>
+                </a>
+            </div>
+            <div class="arama-kutusu">
+                <input type="text" placeholder="Ürün ara...">
+                <button type="button"><i class="fa fa-search"></i></button>
+            </div>
+            <div class="sepet-alani" style="display: flex; gap: 10px;">
+                <a href="account.html" class="sepet-btn"
+                    style="background-color: var(--light-bg); border-color: var(--border-color); color: var(--text-primary);">
+                    <i class="fa fa-user"></i> Hesap
+                </a>
+                <a href="cart.html" class="sepet-btn">
+                    <i class="fa fa-shopping-cart"></i> Sepetim (<span id="sepet-sayac">0</span>)
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <aside class="sidebar">
+            <h3>Kategoriler</h3>
+            <ul>
+                <li><a href="products.html">Tüm Ürünler</a></li>
+                <li><a href="products.html?kategori=bilgisayar">Bilgisayarlar</a></li>
+                <li><a href="products.html?kategori=telefon">Telefonlar</a></li>
+                <li><a href="products.html?kategori=tablet">Tabletler</a></li>
+                <li><a href="products.html?kategori=aksesuar">Aksesuarlar</a></li>
+            </ul>
+        </aside>
+
+        <section class="urun-vitrini" id="urun-listesi">
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TeknoStore. Web Programlama Dersi Projesi.</p>
+    </footer>
+
+    <script src="../JS/script.js"></script>
+
+</body>
+
+</html>

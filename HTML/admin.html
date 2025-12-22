@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli - TeknoStore</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700&display=swap" rel="stylesheet">
+
+    <script>
+        // Kullanıcı giriş yapmamışsa veya admin değilse Login'e at
+        const oturum = localStorage.getItem("oturum");
+        const kullanici = JSON.parse(localStorage.getItem("kullanici"));
+
+        if (oturum !== "aktif" || !kullanici || kullanici.rol !== "admin") {
+            alert("Bu sayfaya erişim yetkiniz yok! Lütfen admin olarak giriş yapın.");
+            window.location.href = "login.html";
+        }
+    </script>
+</head>
+
+<body>
+
+    <header>
+        <div class="container-header"
+            style="max-width: 100%; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 70px;">
+            <div class="logo">
+                <a href="admin.html" style="text-decoration:none;">
+                    <h1>TeknoStore <span style="font-size: 0.6em; color: #555;">| Yönetim Paneli</span></h1>
+                </a>
+            </div>
+            <div class="admin-user-info" style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-weight: 600; color: #333;">Hoşgeldin, Yönetici</span>
+                <button onclick="adminCikis()" class="sepet-btn"
+                    style="background: #dc3545; color: white; border: none;">
+                    <i class="fa fa-sign-out-alt"></i> Çıkış
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container admin-container" style="margin-top: 20px; min-height: 80vh;">
+
+        <div class="admin-sidebar">
+            <ul>
+                <li><a href="#" class="active"><i class="fa fa-cube"></i> Ürünler</a></li>
+                <li><a href="#"><i class="fa fa-shopping-cart"></i> Siparişler</a></li>
+                <li><a href="#"><i class="fa fa-users"></i> Kullanıcılar</a></li>
+                <li><a href="#"><i class="fa fa-chart-line"></i> Raporlar</a></li>
+                <li><a href="#"><i class="fa fa-cog"></i> Ayarlar</a></li>
+            </ul>
+        </div>
+
+        <div class="admin-content">
+            <div class="baslik-alani">
+                <h2>Ürün Yönetimi</h2>
+                <button class="ekle-btn" onclick="modalAc()">
+                    <i class="fa fa-plus"></i> Yeni Ürün Ekle
+                </button>
+            </div>
+
+            <div class="admin-tablo-kapsayici">
+                <table class="admin-tablo">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Resim</th>
+                            <th>Ürün Adı</th>
+                            <th>Fiyat</th>
+                            <th>Stok</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#101</td>
+                            <td><img src="https://via.placeholder.com/40" alt="Urun"></td>
+                            <td>MacBook Pro M2</td>
+                            <td>34.999 TL</td>
+                            <td><span style="color: green; font-weight: bold;">15</span></td>
+                            <td>
+                                <button class="islem-btn duzenle"><i class="fa fa-edit"></i></button>
+                                <button class="islem-btn sil"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#102</td>
+                            <td><img src="https://via.placeholder.com/40" alt="Urun"></td>
+                            <td>iPhone 14 Pro</td>
+                            <td>42.000 TL</td>
+                            <td><span style="color: orange; font-weight: bold;">4</span></td>
+                            <td>
+                                <button class="islem-btn duzenle"><i class="fa fa-edit"></i></button>
+                                <button class="islem-btn sil"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <form class="modal-form" onsubmit="urunEkle(event)">
+        <div class="form-grup">
+            <label>Ürün Adı</label>
+            <input type="text" id="yeni-urun-ad" required>
+        </div>
+        <div class="form-grup-satir">
+            <div class="form-grup">
+                <label>Fiyat (TL)</label>
+                <input type="number" id="yeni-urun-fiyat" required>
+            </div>
+            <div class="form-grup">
+                <label>Stok Adedi</label>
+                <input type="number" id="yeni-urun-stok" required>
+            </div>
+        </div>
+
+        <div class="form-grup">
+            <label>Ürün Resmi Seç</label>
+            <input type="file" id="yeni-urun-resim" accept="image/*">
+        </div>
+
+        <button type="submit" class="siparis-btn" style="margin-top: 10px;">Kaydet</button>
+    </form>
+
+    <footer>
+        <p>&copy; 2025 TeknoStore Yönetim Paneli.</p>
+    </footer>
+
+    <script>
+        // Modal İşlemleri
+        const modal = document.getElementById('urun-ekle-modal');
+
+        function modalAc() {
+            modal.style.display = "block";
+        }
+
+        function modalKapat() {
+            modal.style.display = "none";
+        }
+
+        // Modal dışına tıklayınca kapatma
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modalKapat();
+            }
+        }
+
+        // Admin Çıkış İşlemi
+        function adminCikis() {
+            if (confirm("Yönetim panelinden çıkmak istediğinize emin misiniz?")) {
+                localStorage.removeItem("oturum");
+                localStorage.removeItem("kullanici");
+                window.location.href = "login.html";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
