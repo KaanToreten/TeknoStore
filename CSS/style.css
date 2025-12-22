@@ -1836,3 +1836,45 @@ footer {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     border: 1px solid #f1f5f9;
 }
+
+/* --- TAKSİT TABLOSU STİLLERİ (Detail.html) --- */
+.taksit-tablosu-container {
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.taksit-tablosu {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.taksit-tablosu th {
+    text-align: left;
+    padding: 12px 15px;
+    background-color: #eff6ff;
+    color: #1e293b;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.taksit-tablosu td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+.taksit-tablosu tr:last-child td {
+    border-bottom: none;
+}
+
+.taksit-tablosu tr:hover {
+    background-color: white;
+}
+
+.taksit-tablosu i {
+    margin-right: 8px;
+    font-size: 1.1rem;
+}

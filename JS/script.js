@@ -287,8 +287,9 @@ function detaySayfasiniYukle() {
 
         // Galeri ve Yorumlar
         galeriOlustur(urun.resim, urun.id);
-        yorumListesiniGetir(urunId);
-        yorumFormunuAyarla();
+        yorumListesiniGetir(urunId); // Bu fonksiyonun ismi de değişmiş olabilir, kontrol ettim aşağıda "yorumListesiniGetir" yok, direkt listeleme yapılıyor. Düzeltiyorum.
+        puanlariGuncelle(urun.id); // Puanları göster
+        yorumFormunuAyarla(); // Formun görünürlüğünü ayarla
 
         // Seçenekleri Oluştur
         secenekleriOlustur(urun.secenekler);
@@ -335,7 +336,7 @@ function secenekleriOlustur(seceneklerData) {
 }
 
 /* =========================================
-   5. DİĞER FONKSİYONLAR (GALERİ, YORUM, LOGIN, KUPON)
+   5. DİĞER FONKSİYONLAR (GALERİ, LOGIN, KUPON)
    ========================================= */
 /* --- GELİŞMİŞ GALERİ FONKSİYONU (RESİMLERİ GETİRİR) --- */
 function galeriOlustur(anaResim, urunId) {
@@ -410,38 +411,166 @@ function oturumHeaderKontrol() {
     }
 }
 
-function yorumFormunuAyarla() {
-    const form = document.getElementById("yorum-formu-container");
-    const uyari = document.getElementById("giris-uyari-kutu");
-    if (form && uyari) {
-        if (localStorage.getItem("oturum") === "aktif") {
-            form.style.display = "block"; uyari.style.display = "none";
+/* =========================================
+   YORUM VE PUANLAMA SİSTEMİ (GELİŞMİŞ)
+   ========================================= */
+
+// 1. KULLANICI YILDIZ SEÇTİĞİNDE ÇALIŞIR
+function yildizVer(puan) {
+    // Seçilen puanı gizli inputa yaz
+    const input = document.getElementById("secilen-yildiz");
+    if (input) input.value = puan;
+
+    // Görseli Güncelle (Seçilenler turuncu, diğerleri gri)
+    const yildizlar = document.querySelectorAll("#yildiz-secimi i");
+    yildizlar.forEach((yildiz, index) => {
+        if (index < puan) {
+            // Dolu Yıldız
+            yildiz.classList.remove("far"); // İçi boş sınıfını sil
+            yildiz.classList.add("fas");    // İçi dolu sınıfını ekle
+            yildiz.style.color = "#f59e0b"; // Turuncu renk
         } else {
-            form.style.display = "none"; uyari.style.display = "block";
+            // Boş Yıldız
+            yildiz.classList.remove("fas");
+            yildiz.classList.add("far");
+            yildiz.style.color = "#cbd5e1"; // Gri renk
         }
-    }
+    });
 }
 
-// Basit Yorum Listeleme
-function yorumListesiniGetir(id) {
+// 2. YORUMLARI LİSTELE (EKLENDİ)
+function yorumListesiniGetir(urunId) {
     const kutu = document.getElementById("yorum-listesi-kutu");
     if (!kutu) return;
-    let yorumlar = JSON.parse(localStorage.getItem(`yorumlar_urun_${id}`)) || [];
-    const ozet = document.getElementById("yorum-sayisi-ozet");
+
+    let yorumlar = JSON.parse(localStorage.getItem(`yorumlar_urun_${urunId}`)) || [];
 
     if (yorumlar.length === 0) {
-        kutu.innerHTML = '<p style="color:#777;">Henüz yorum yok.</p>';
-        if (ozet) ozet.innerText = "(0 Değerlendirme)";
+        kutu.innerHTML = '<p style="color:#777;">Henüz yorum yapılmamış. İlk yorumu sen yap!</p>';
     } else {
-        if (ozet) ozet.innerText = `(${yorumlar.length} Değerlendirme)`;
         kutu.innerHTML = yorumlar.map(y => `
             <div class="yorum-kart">
-                <div class="yorum-baslik"><b>${y.ad}</b> <small>${y.tarih}</small></div>
-                <p>${y.metin}</p>
+                <div class="yorum-baslik">
+                    <b>${y.ad}</b> 
+                    <span style="color:#f59e0b; font-size:0.9rem; margin-left:10px;">
+                        ${'<i class="fas fa-star"></i>'.repeat(y.puan)}${'<i class="far fa-star"></i>'.repeat(5 - y.puan)}
+                    </span>
+                    <small style="float:right; color:#999;">${y.tarih}</small>
+                </div>
+                <p style="margin-top:5px;">${y.metin}</p>
             </div>
         `).join("");
     }
 }
+
+// 2. ÜRÜNÜN GENEL ORTALAMASINI HESAPLA VE GÖSTER
+function puanlariGuncelle(urunId) {
+    // 1. LocalStorage'dan bu ürünün yorumlarını çek
+    const yorumlar = JSON.parse(localStorage.getItem(`yorumlar_urun_${urunId}`)) || [];
+    const ozetYazi = document.getElementById("yorum-sayisi-ozet");
+    const anaYildizKutusu = document.getElementById("ana-yildizlar");
+
+    if (!anaYildizKutusu || !ozetYazi) return;
+
+    // Eğer hiç yorum yoksa
+    if (yorumlar.length === 0) {
+        ozetYazi.innerText = "(0 Değerlendirme)";
+        anaYildizKutusu.innerHTML = `
+            <i class="far fa-star"></i><i class="far fa-star"></i>
+            <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+        `;
+        anaYildizKutusu.style.color = "#cbd5e1"; // Gri
+        return;
+    }
+
+    // 2. Ortalamayı Hesapla
+    // Tüm puanları topla
+    const toplamPuan = yorumlar.reduce((toplam, yorum) => toplam + yorum.puan, 0);
+    // Yorum sayısına böl
+    const ortalama = toplamPuan / yorumlar.length;
+    // Yuvarla (Örn: 4.2 ise 4 yıldız, 4.6 ise 5 yıldız gibi)
+    const yuvarlanmisPuan = Math.round(ortalama);
+
+    // 3. Ekrana Bas (Ana Başlık Altına)
+    let yildizHTML = "";
+    for (let i = 1; i <= 5; i++) {
+        if (i <= yuvarlanmisPuan) {
+            yildizHTML += '<i class="fas fa-star"></i>'; // Dolu
+        } else {
+            yildizHTML += '<i class="far fa-star"></i>'; // Boş
+        }
+    }
+
+    anaYildizKutusu.innerHTML = yildizHTML;
+    anaYildizKutusu.style.color = "#f59e0b"; // Turuncu
+
+    // Virgülden sonra 1 basamak göster (4.5 gibi)
+    ozetYazi.innerText = `(${ortalama.toFixed(1)} / 5 - ${yorumlar.length} Değerlendirme)`;
+}
+
+// 3. YORUM GÖNDERME İŞLEMİ
+function yorumGonder(event) {
+    event.preventDefault(); // Sayfanın yenilenmesini engelle
+
+    // ID'yi URL'den al
+    const urlParams = new URLSearchParams(window.location.search);
+    const urunId = urlParams.get('id');
+
+    // Form verilerini al
+    const metin = document.getElementById("yorum-metin").value;
+    const puan = document.getElementById("secilen-yildiz").value;
+
+    // Kullanıcı bilgisini al
+    const kullanici = JSON.parse(localStorage.getItem("kullanici"));
+    const ad = kullanici ? kullanici.ad : "Anonim";
+
+    // KONTROL: Yıldız seçilmiş mi?
+    if (puan == "0" || puan === "") {
+        alert("Lütfen ürün için bir yıldız puanı seçiniz!");
+        return; // Fonksiyonu durdur
+    }
+
+    // Yeni Yorum Objesi
+    const yeniYorum = {
+        ad: ad,
+        metin: metin,
+        puan: parseInt(puan),
+        tarih: new Date().toLocaleDateString('tr-TR')
+    };
+
+    // Kaydet
+    let yorumlar = JSON.parse(localStorage.getItem(`yorumlar_urun_${urunId}`)) || [];
+    yorumlar.push(yeniYorum);
+    localStorage.setItem(`yorumlar_urun_${urunId}`, JSON.stringify(yorumlar));
+
+    alert("Değerlendirmeniz alındı! Teşekkürler.");
+
+    // Formu Temizle ve Yıldızları Sıfırla
+    event.target.reset();
+    yildizVer(0); // Yıldızları griye çevir
+
+    // Listeyi ve Ortalamayı Anında Güncelle (Sayfa yenilenmeden gör)
+    yorumListesiniGetir(urunId);
+    puanlariGuncelle(urunId);
+}
+
+// 4. LOGİN DURUMUNA GÖRE FORM GÖSTER/GİZLE
+function yorumFormunuAyarla() {
+    const formContainer = document.getElementById("yorum-formu-container");
+    const uyariContainer = document.getElementById("giris-uyari-kutu");
+    const oturum = localStorage.getItem("oturum");
+
+    if (formContainer && uyariContainer) {
+        if (oturum === "aktif") {
+            formContainer.style.display = "block";
+            uyariContainer.style.display = "none";
+        } else {
+            formContainer.style.display = "none";
+            uyariContainer.style.display = "block";
+        }
+    }
+}
+
 
 // KUPON SİSTEMİ
 function kuponUygula() {
@@ -484,4 +613,382 @@ function urunleriListele() {
                 </div>
             </div>`;
     });
+}
+/* =========================================
+   6. GİRİŞ, KAYIT VE ÇIKIŞ İŞLEMLERİ
+   ========================================= */
+
+// A. KAYIT KONTROL (Telefon Numarasını Kaydeder)
+function kayitKontrol(event) {
+    event.preventDefault();
+
+    const adInput = document.getElementById('reg-ad');
+    const ad = adInput ? adInput.value : "İsimsiz Kullanıcı";
+    const email = document.getElementById('reg-email').value;
+    const telefon = document.getElementById('reg-phone').value;
+    const sifre1 = document.getElementById('reg-pass').value;
+    const sifre2 = document.getElementById('reg-pass-confirm').value;
+
+    // Telefon Kontrolü
+    if (telefon.length !== 11) {
+        alert("HATA: Telefon numarası 11 haneli olmalıdır! (Örn: 05551234567)");
+        return false;
+    }
+
+    // Şifre Uzunluk Kontrolü
+    if (sifre1.length < 6 || sifre1.length > 20) {
+        alert("HATA: Şifreniz en az 6, en fazla 20 karakter olmalıdır!");
+        return false;
+    }
+
+    // Şifre Eşleşme Kontrolü
+    if (sifre1 !== sifre2) {
+        alert("HATA: Şifreler eşleşmiyor!");
+        return false;
+    }
+
+    if (!/[A-Z]/.test(sifre1) || !/[0-9]/.test(sifre1)) {
+        alert("HATA: Şifre en az 1 Büyük Harf ve 1 Rakam içermelidir!");
+        return false;
+    }
+
+    // Kullanıcıyı Oluştur (Simülasyon)
+    const yeniKullanici = {
+        ad: ad,
+        email: email,
+        telefon: telefon,
+        rol: "musteri",
+        kayitTarihi: new Date().toLocaleDateString('tr-TR'),
+        adresler: [] // Boş adres dizisi başlat
+    };
+
+    // Geçici kayıt olarak sakla (Giriş yapınca asıl kullanıcı olacak)
+    localStorage.setItem("geciciKayit", JSON.stringify(yeniKullanici));
+
+    alert("Kayıt Başarılı! Şimdi giriş yapabilirsiniz.");
+
+    // Login formuna geçiş yap
+    const container = document.getElementById('container');
+    if (container) container.classList.remove("right-panel-active");
+
+    // Formu temizle
+    event.target.reset();
+}
+
+// B. GİRİŞ YAP (Kaydedilen Bilgiyi Alır)
+function girisYap(event, tip) {
+    event.preventDefault();
+    let email, sifre;
+
+    if (tip === 'giris') {
+        const form = document.querySelector('.sign-in-container form');
+        email = form.querySelector('input[type="email"]').value;
+        sifre = form.querySelector('input[type="password"]').value;
+    } else {
+        // Otomatik giriş senaryosu (şifresiz)
+        email = "test@test.com"; sifre = "123";
+    }
+
+    // 1. ADMIN GİRİŞİ
+    if (email === "admin@admin.com" && sifre === "123456") {
+        localStorage.setItem("oturum", "aktif");
+        localStorage.setItem("kullanici", JSON.stringify({ ad: "Sistem Yöneticisi", email: email, rol: "admin" }));
+        alert("Yönetici girişi başarılı!");
+        window.location.href = "admin.html";
+        return;
+    }
+
+    // 2. MÜŞTERİ GİRİŞİ
+    // Önce geçici kayıttaki veriyi kontrol et
+    let kayitliUser = JSON.parse(localStorage.getItem("geciciKayit"));
+
+    // Eğer girilen mail, son kayıt olan mail ile uyuşmuyorsa demo hesap oluştur
+    if (!kayitliUser || kayitliUser.email !== email) {
+        kayitliUser = {
+            ad: "Misafir Kullanıcı",
+            email: email,
+            telefon: "05XX XXX XX XX",
+            rol: "musteri",
+            adresler: []
+        };
+    }
+
+    localStorage.setItem("oturum", "aktif");
+    localStorage.setItem("kullanici", JSON.stringify(kayitliUser));
+
+    alert(`Hoşgeldiniz, ${kayitliUser.ad}!`);
+    window.location.href = "index.html";
+}
+
+// ÇIKIŞ YAP
+function cikisYap() {
+    if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
+        localStorage.removeItem("oturum");
+        // localStorage.removeItem("kullanici"); // İsteğe bağlı: Kullanıcıyı hatırlamak istersen silme
+        window.location.href = "index.html";
+    }
+}
+
+function adminCikis() {
+    if (confirm("Yönetim panelinden çıkmak istediğinize emin misiniz?")) {
+        localStorage.removeItem("oturum");
+        window.location.href = "login.html";
+    }
+}
+
+/* =========================================
+   7. HESAP VE SİPARİŞ YÖNETİMİ
+   ========================================= */
+
+// HESAP SAYFASINI DOLDUR (account.html)
+document.addEventListener("DOMContentLoaded", () => {
+    if (window.location.pathname.includes("account.html")) {
+        hesapSayfasiniYukle();
+    }
+});
+
+function hesapSayfasiniYukle() {
+    const kullanici = JSON.parse(localStorage.getItem("kullanici"));
+
+    if (!kullanici) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    // 1. Profil Bilgileri
+    if (document.getElementById("sidebar-ad")) document.getElementById("sidebar-ad").innerText = kullanici.ad || "";
+    if (document.getElementById("prof-ad")) document.getElementById("prof-ad").innerText = kullanici.ad || "";
+    if (document.getElementById("prof-email")) document.getElementById("prof-email").innerText = kullanici.email || "";
+    if (document.getElementById("prof-tel")) document.getElementById("prof-tel").innerText = kullanici.telefon || "Belirtilmemiş";
+    if (document.getElementById("prof-tarih") && kullanici.kayitTarihi)
+        document.getElementById("prof-tarih").innerText = kullanici.kayitTarihi;
+
+    // 2. Siparişleri Listele (Kullanıcı verisiyle)
+    siparisleriListele(kullanici);
+
+    // 3. Adresleri Listele
+    adresleriListele(kullanici);
+}
+
+function siparisleriListele(kullanici) {
+    const siparisler = JSON.parse(localStorage.getItem("siparisler")) || [];
+    const listeKutu = document.getElementById("siparis-listesi");
+    if (!listeKutu) return;
+
+    // FİLTRELEME: Sadece bu kullanıcının siparişlerini göster
+    const kullaniciSiparisleri = siparisler.filter(sip => sip.kullaniciEmail === kullanici.email);
+
+    if (kullaniciSiparisleri.length === 0) {
+        listeKutu.innerHTML = `<p style="color:#64748b;">Henüz verilmiş bir siparişiniz yok.</p>`;
+    } else {
+        let html = `<table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>Sipariş No</th>
+                            <th>Tarih</th>
+                            <th>Tutar</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        kullaniciSiparisleri.reverse().forEach(sip => {
+            const fiyat = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(sip.tutar);
+            html += `
+                <tr>
+                    <td>#${sip.siparisNo}</td>
+                    <td>${sip.tarih}</td>
+                    <td>${fiyat}</td>
+                    <td><span class="status-badge status-hazirlaniyor">${sip.durum}</span></td>
+                </tr>`;
+        });
+        html += `</tbody></table>`;
+        listeKutu.innerHTML = html;
+    }
+}
+
+function adresleriListele(kullanici) {
+    const adresKutusu = document.getElementById("kayitli-adres-listesi");
+    if (!adresKutusu) return;
+
+    if (kullanici.adresler && kullanici.adresler.length > 0) {
+        adresKutusu.innerHTML = "";
+        kullanici.adresler.forEach(adres => {
+            adresKutusu.innerHTML += `
+            <div class="info-box" style="background:white; border-left:4px solid var(--primary-color);">
+                <label style="font-weight:bold; color:var(--primary-color); font-size:1rem;">
+                    <i class="fa fa-map-marker-alt"></i> ${adres.baslik}
+                </label>
+                <p style="font-size:0.95rem; margin-top:5px;">${adres.acik}</p>
+                <p style="font-size:0.85rem; color:#64748b; margin-top:5px;">${adres.sehir}</p>
+            </div>`;
+        });
+    } else {
+        adresKutusu.innerHTML = `<p>Henüz kayıtlı adresiniz yok. Sipariş verirken kaydedebilirsiniz.</p>`;
+    }
+}
+
+/* =========================================
+   8. CHECKOUT VE ADRES YÖNETİMİ
+   ========================================= */
+
+// Checkout Sayfası Yüklendiğinde
+document.addEventListener("DOMContentLoaded", () => {
+    if (window.location.pathname.includes("checkout.html")) {
+        checkoutYukle();
+    }
+});
+
+function checkoutYukle() {
+    // 1. Kullanıcı Kontrolü
+    const kullanici = JSON.parse(localStorage.getItem("kullanici"));
+    if (!kullanici) {
+        alert("Sipariş vermek için giriş yapmalısınız.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    // 2. Sipariş Özetini Getir
+    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
+    const ozetDiv = document.getElementById("checkout-ozet");
+
+    if (ozetDiv) {
+        let toplam = 0;
+        ozetDiv.innerHTML = "";
+
+        sepet.forEach(u => {
+            toplam += u.fiyat * u.adet;
+            ozetDiv.innerHTML += `
+                <div class="ozet-satir">
+                    <span>${u.ad} (x${u.adet})</span>
+                    <span>${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(u.fiyat * u.adet)}</span>
+                </div>`;
+        });
+
+        ozetDiv.innerHTML += `
+            <div class="ozet-toplam">
+                <span>Toplam</span>
+                <span>${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(toplam)}</span>
+            </div>`;
+    }
+
+    // 3. Kayıtlı Adresleri Listele (Dropdown)
+    const adresKutusu = document.getElementById("kayitli-adres-kutusu");
+    const select = document.getElementById("adres-secimi");
+
+    if (adresKutusu && select && kullanici.adresler && kullanici.adresler.length > 0) {
+        adresKutusu.style.display = "block";
+
+        // Önce temizle (Yeni Adres hariç)
+        select.innerHTML = '<option value="">Yeni Adres Gir...</option>';
+
+        kullanici.adresler.forEach((adres, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.text = `${adres.baslik} - ${adres.sehir}`;
+            select.appendChild(option);
+        });
+    }
+}
+
+// Dropdown'dan Seçilince Formu Doldur
+function adresDoldur() {
+    const select = document.getElementById("adres-secimi");
+    const index = select.value;
+
+    const baslikInput = document.getElementById("adres-baslik");
+    const sehirInput = document.getElementById("adres-sehir");
+    const acikInput = document.getElementById("adres-acik");
+
+    if (index === "") {
+        baslikInput.value = "";
+        sehirInput.value = "";
+        acikInput.value = "";
+        return;
+    }
+
+    const kullanici = JSON.parse(localStorage.getItem("kullanici"));
+    const secilenAdres = kullanici.adresler[index];
+
+    if (secilenAdres) {
+        baslikInput.value = secilenAdres.baslik;
+        sehirInput.value = secilenAdres.sehir;
+        acikInput.value = secilenAdres.acik;
+    }
+}
+
+// SİPARİŞİ VE ADRESİ KAYDET (checkout.html)
+function siparisiTamamla() {
+    const baslik = document.getElementById("adres-baslik").value;
+    const sehir = document.getElementById("adres-sehir").value;
+    const acik = document.getElementById("adres-acik").value;
+    const kaydetCheckbox = document.getElementById("adresi-kaydet");
+
+    if (!baslik || !sehir || !acik) {
+        alert("Lütfen adres bilgilerini eksiksiz doldurun.");
+        return;
+    }
+
+    let kullanici = JSON.parse(localStorage.getItem("kullanici"));
+
+    // 1. Adresi Kaydetme İsteği
+    if (kaydetCheckbox && kaydetCheckbox.checked) {
+        if (!kullanici.adresler) kullanici.adresler = [];
+
+        // Aynı başlık varsa ekleme yapma basit kontrolü
+        const varMi = kullanici.adresler.find(a => a.baslik === baslik);
+        if (!varMi) {
+            kullanici.adresler.push({ baslik: baslik, sehir: sehir, acik: acik });
+            localStorage.setItem("kullanici", JSON.stringify(kullanici));
+        }
+    }
+
+    // 2. Siparişi Oluştur
+    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
+    if (sepet.length === 0) { alert("Sepetiniz boş!"); return; }
+
+    const toplamTutar = sepet.reduce((top, urun) => top + (urun.fiyat * urun.adet), 0);
+
+    const yeniSiparis = {
+        siparisNo: Math.floor(Math.random() * 900000) + 100000,
+        tarih: new Date().toLocaleDateString('tr-TR'),
+        tutar: toplamTutar,
+        durum: "Hazırlanıyor",
+        teslimatAdresi: `${baslik} (${sehir})`,
+        kullaniciEmail: kullanici.email, // EKLENDİ: Siparişi kullanıcıya bağla
+        urunler: sepet
+    };
+
+    let siparisler = JSON.parse(localStorage.getItem("siparisler")) || [];
+    siparisler.push(yeniSiparis);
+    localStorage.setItem("siparisler", JSON.stringify(siparisler));
+
+    // Sepeti Temizle
+    localStorage.removeItem("sepet");
+
+    alert(`Siparişiniz Başarıyla Alındı! \nSipariş No: #${yeniSiparis.siparisNo}`);
+    window.location.href = "account.html";
+}
+
+// Diğer yardımcı fonksiyonlar...
+function adetDegistir(miktar) {
+    const input = document.getElementById("urun-adet");
+    if (!input) return;
+
+    let yeniDeger = parseInt(input.value) + miktar;
+    if (yeniDeger < 1) yeniDeger = 1;
+    if (yeniDeger > 10) yeniDeger = 10;
+    input.value = yeniDeger;
+}
+
+function sekmeDegistir(sekmeId) {
+    document.querySelectorAll(".sekme-icerik").forEach(div => div.classList.remove("aktif"));
+    document.querySelectorAll(".sekme-btn").forEach(btn => btn.classList.remove("active"));
+
+    const hedef = document.getElementById(sekmeId);
+    if (hedef) hedef.classList.add("aktif");
+
+    // Butonu da aktif yap (Basit yol: event.target kullanılabilir ama parametre olarak gelmiyor)
+    // Bu yüzden tüm butonlardan kaldırıp tıklanana manuel class ekleme HTML tarafında onclick ile yapılabilir.
+    // Şimdilik sadece içerik değişimi yeterli.
 }

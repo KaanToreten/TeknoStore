@@ -7,83 +7,168 @@
     <title>Hesabım - TeknoStore</title>
     <link rel="stylesheet" href="../CSS/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Profil Sayfasına Özel Basit CSS */
-        .profil-container {
-            max-width: 900px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+        /* Account Sayfasına Özel Ek Stiller */
+        .account-wrapper {
             display: flex;
+            gap: 30px;
+            margin-top: 30px;
             min-height: 500px;
         }
 
-        .profil-sidebar {
+        /* Sol Menü */
+        .account-sidebar {
             width: 250px;
-            background: #f8f9fa;
-            border-right: 1px solid #eee;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: fit-content;
+        }
+
+        .sidebar-header {
             padding: 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
         }
 
-        .profil-content {
-            flex: 1;
-            padding: 30px;
-        }
-
-        .profil-menu ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .profil-menu li {
+        .sidebar-header i {
+            font-size: 50px;
+            color: var(--primary-color);
             margin-bottom: 10px;
         }
 
-        .profil-menu a {
+        .sidebar-menu button {
+            width: 100%;
+            text-align: left;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #64748b;
+            transition: 0.2s;
+        }
+
+        .sidebar-menu button:hover,
+        .sidebar-menu button.active {
+            background: #eff6ff;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .sidebar-menu button i {
+            width: 25px;
+        }
+
+        /* Sağ İçerik */
+        .account-content {
+            flex: 1;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 30px;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .content-section.active {
             display: block;
-            padding: 10px;
-            color: #333;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: 0.3s;
         }
 
-        .profil-menu a:hover,
-        .profil-menu a.active {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .profil-info-group {
+        .section-title {
+            font-size: 1.5rem;
             margin-bottom: 20px;
+            color: #1e293b;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
         }
 
-        .profil-info-group label {
-            font-weight: bold;
+        /* Bilgi Kutuları */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-box label {
+            font-size: 0.85rem;
+            color: #64748b;
             display: block;
-            color: #555;
             margin-bottom: 5px;
         }
 
-        .profil-info-group p {
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #eee;
+        .info-box p {
+            font-size: 1.1rem;
+            color: #334155;
+            font-weight: 500;
         }
 
-        .cikis-btn {
-            margin-top: 20px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
+        /* Sipariş Tablosu */
+        .order-table {
             width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-table th {
+            text-align: left;
+            padding: 15px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .order-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-hazirlaniyor {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-kargoda {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .status-teslim {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -91,86 +176,85 @@
 <body>
 
     <header>
-        <div class="container-header"
-            style="padding: 0 20px; height: 80px; display: flex; align-items: center; justify-content: space-between; max-width: 1280px; margin: 0 auto;">
+        <div class="container">
             <div class="logo"><a href="index.html" style="text-decoration:none;">
                     <h1>TeknoStore</h1>
                 </a></div>
-            <nav><a href="index.html" style="color: #333; font-weight: 600;">Ana Sayfa</a></nav>
+            <div class="sepet-alani" style="display: flex; gap: 10px;">
+                <a href="index.html" class="sepet-btn">Alışverişe Dön</a>
+                <button onclick="cikisYap()" class="sepet-btn"
+                    style="background:#ef4444; color:white; border:none;">Çıkış Yap</button>
+            </div>
         </div>
     </header>
 
-    <main>
-        <div class="profil-container">
-            <div class="profil-sidebar">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <i class="fa fa-user-circle" style="font-size: 60px; color: var(--primary-color);"></i>
-                    <h3 id="sidebar-isim" style="margin-top: 10px;">Kullanıcı</h3>
+    <main class="container account-wrapper">
+
+        <div class="account-sidebar">
+            <div class="sidebar-header">
+                <i class="fa fa-user-circle"></i>
+                <h3 id="sidebar-ad">Kullanıcı</h3>
+            </div>
+            <div class="sidebar-menu">
+                <button class="active" onclick="tabDegistir('profil')"><i class="fa fa-id-card"></i> Üyelik
+                    Bilgilerim</button>
+                <button onclick="tabDegistir('siparisler')"><i class="fa fa-box-open"></i> Siparişlerim</button>
+                <button onclick="tabDegistir('adres')"><i class="fa fa-map-marker-alt"></i> Adres Bilgilerim</button>
+            </div>
+        </div>
+
+        <div class="account-content">
+
+            <div id="profil" class="content-section active">
+                <h2 class="section-title">Üyelik Bilgilerim</h2>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <label>Ad Soyad</label>
+                        <p id="prof-ad">...</p>
+                    </div>
+                    <div class="info-box">
+                        <label>E-posta Adresi</label>
+                        <p id="prof-email">...</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Telefon Numarası</label>
+                        <p id="prof-tel">...</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Kayıt Tarihi</label>
+                        <p id="prof-tarih">22.12.2025</p>
+                    </div>
                 </div>
-                <nav class="profil-menu">
-                    <ul>
-                        <li><a href="#" class="active"><i class="fa fa-user"></i> Bilgilerim</a></li>
-                        <li><a href="#"><i class="fa fa-box"></i> Siparişlerim</a></li>
-                        <li><a href="#"><i class="fa fa-map-marker-alt"></i> Adreslerim</a></li>
-                    </ul>
-                </nav>
-                <button onclick="cikisYap()" class="cikis-btn"><i class="fa fa-sign-out-alt"></i> Çıkış Yap</button>
             </div>
 
-            <div class="profil-content">
-                <h2
-                    style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; color: var(--primary-color);">
-                    Kişisel Bilgiler</h2>
-
-                <div class="profil-info-group">
-                    <label>Ad Soyad</label>
-                    <p id="profil-ad">Yükleniyor...</p>
-                </div>
-
-                <div class="profil-info-group">
-                    <label>E-posta Adresi</label>
-                    <p id="profil-email">Yükleniyor...</p>
-                </div>
-
-                <div class="profil-info-group">
-                    <label>Telefon Numarası</label>
-                    <p id="profil-telefon">Yükleniyor...</p>
-                </div>
-
-                <div class="profil-info-group">
-                    <label>Kayıtlı Adres</label>
-                    <p id="profil-adres">Yükleniyor...</p>
+            <div id="siparisler" class="content-section">
+                <h2 class="section-title">Sipariş Geçmişim</h2>
+                <div id="siparis-listesi">
+                    <p>Yükleniyor...</p>
                 </div>
             </div>
+
+            <div id="adres" class="content-section">
+                <h2 class="section-title">Kayıtlı Adreslerim</h2>
+                <div id="kayitli-adres-listesi" class="info-grid">
+                    <p>Yükleniyor...</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <footer>
-        <p style="text-align: center; padding: 20px;">&copy; 2025 TeknoStore.</p>
-    </footer>
-
     <script src="../JS/script.js"></script>
     <script>
-        // Sayfa Yüklendiğinde Bilgileri Doldur
-        document.addEventListener("DOMContentLoaded", () => {
-            const kullaniciVerisi = localStorage.getItem("kullanici");
+        // Sayfa içi basit Tab değişimi
+        function tabDegistir(id) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu button').forEach(el => el.classList.remove('active'));
 
-            if (kullaniciVerisi) {
-                const kullanici = JSON.parse(kullaniciVerisi);
-
-                document.getElementById("sidebar-isim").innerText = kullanici.ad;
-                document.getElementById("profil-ad").innerText = kullanici.ad;
-                document.getElementById("profil-email").innerText = kullanici.email;
-                document.getElementById("profil-telefon").innerText = kullanici.telefon;
-                document.getElementById("profil-adres").innerText = kullanici.adres;
-            } else {
-                // Eğer giriş yapmadan buraya geldiyse Login'e at
-                alert("Önce giriş yapmalısınız!");
-                window.location.href = "login.html";
-            }
-        });
+            document.getElementById(id).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
     </script>
-
 </body>
 
 </html>

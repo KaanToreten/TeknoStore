@@ -40,15 +40,15 @@
 
                     <span>veya e-posta ile kayıt ol</span>
 
-                    <input type="text" placeholder="Ad Soyad" required />
-                    <input type="email" placeholder="E-posta" required />
+                    <input type="text" id="reg-ad" placeholder="Ad Soyad" required />
+                    <input type="email" id="reg-email" placeholder="E-posta" required />
+                    <input type="text" id="reg-phone" placeholder="Telefon (05XXXXXXXXX)" maxlength="11"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" required />
+                    <input type="password" id="reg-pass" placeholder="Şifre (Min 6 - Max 20 Karakter)" minlength="6"
+                        maxlength="20" required />
+                    <input type="password" id="reg-pass-confirm" placeholder="Şifre Tekrar" maxlength="20" required />
 
-                    <input type="password" id="reg-pass" placeholder="Şifre (En az 1 Büyük Harf, 1 Sayı)" required />
-                    <input type="password" id="reg-pass-confirm" placeholder="Şifre Tekrar" required />
 
-                    <input type="text" name="telefonlar" placeholder="Telefon" />
-                    <small style="font-size: 10px; color: #d97706; margin-bottom: 10px; align-self: flex-start;">* 1NF
-                        Kuralı: Virgülle çoklu numara girilebilir.</small>
 
                     <button type="submit">Kayıt Ol</button>
                 </form>
