@@ -104,6 +104,16 @@ document.addEventListener("DOMContentLoaded", () => {
    ========================================= */
 
 // Sepete Ekle (Listeden Hızlı Ekleme)
+// YARDIMCI: Sepet Anahtarını Belirle (Her kullanıcı için ayrı)
+function getSepetKey() {
+    const oturum = localStorage.getItem("oturum");
+    const kullanici = JSON.parse(localStorage.getItem("kullanici"));
+    if (oturum === "aktif" && kullanici && kullanici.email) {
+        return `sepet_${kullanici.email}`;
+    }
+    return "sepet";
+}
+
 function sepeteEkle(id) {
     const urun = urunler.find(u => u.id === id);
     // Hızlı eklemede varsayılan varyasyonlar seçilmediği için boş gönderiyoruz
@@ -113,7 +123,8 @@ function sepeteEkle(id) {
 
 // Detay Sayfasından Sepete Ekle (Varyasyonlu)
 function detaydanSepeteEkle(urun, hizliEkle = false) {
-    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
+    let sepetKey = getSepetKey();
+    let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
     let adet = 1;
 
     // Eğer detay sayfasındaysak inputtan adeti al
@@ -151,14 +162,14 @@ function detaydanSepeteEkle(urun, hizliEkle = false) {
         });
     }
 
-    localStorage.setItem("sepet", JSON.stringify(sepet));
+    localStorage.setItem(sepetKey, JSON.stringify(sepet));
     sepetGuncelle();
     alert(`${urun.ad} sepete eklendi!`);
 }
 
 // Headerdaki Sepet Sayacını Güncelle
 function sepetGuncelle() {
-    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
+    let sepet = JSON.parse(localStorage.getItem(getSepetKey())) || [];
     const toplamAdet = sepet.reduce((toplam, urun) => toplam + urun.adet, 0);
     document.querySelectorAll("#sepet-sayac").forEach(el => el.innerText = toplamAdet);
 }
@@ -171,14 +182,15 @@ function sepetSayfasiniDoldur() {
 
     if (!sepetListesi) return;
 
-    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
+    let sepetKey = getSepetKey();
+    let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
 
     // --- TAMİR KODU (Eski verileri düzelt) ---
     sepet = sepet.map(u => {
         if (!u.sepetId) u.sepetId = u.id + "_" + Math.random().toString(36).substr(2, 5);
         return u;
     });
-    localStorage.setItem("sepet", JSON.stringify(sepet));
+    localStorage.setItem(sepetKey, JSON.stringify(sepet));
     // ----------------------------------------
 
     sepetListesi.innerHTML = "";
@@ -247,7 +259,8 @@ function sepetSayfasiniDoldur() {
 
 // Miktar Güncelle ve Sil
 function sepetMiktarGuncelle(sepetId, degisim) {
-    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
+    let sepetKey = getSepetKey();
+    let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
     const index = sepet.findIndex(u => u.sepetId === sepetId);
 
     if (index > -1) {
@@ -256,16 +269,17 @@ function sepetMiktarGuncelle(sepetId, degisim) {
             if (confirm("Ürünü silmek istiyor musunuz?")) sepet.splice(index, 1);
             else sepet[index].adet = 1;
         }
-        localStorage.setItem("sepet", JSON.stringify(sepet));
+        localStorage.setItem(sepetKey, JSON.stringify(sepet));
         sepetSayfasiniDoldur();
         sepetGuncelle();
     }
 }
 
 function sepettenSil(sepetId) {
-    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
+    let sepetKey = getSepetKey();
+    let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
     sepet = sepet.filter(u => u.sepetId !== sepetId);
-    localStorage.setItem("sepet", JSON.stringify(sepet));
+    localStorage.setItem(sepetKey, JSON.stringify(sepet));
     sepetSayfasiniDoldur();
     sepetGuncelle();
 }
@@ -656,6 +670,7 @@ function kayitKontrol(event) {
     const yeniKullanici = {
         ad: ad,
         email: email,
+        sifre: sifre1, // Şifre kaydedildi
         telefon: telefon,
         rol: "musteri",
         kayitTarihi: new Date().toLocaleDateString('tr-TR'),
@@ -702,17 +717,23 @@ function girisYap(event, tip) {
     // Önce geçici kayıttaki veriyi kontrol et
     let kayitliUser = JSON.parse(localStorage.getItem("geciciKayit"));
 
-    // Eğer girilen mail, son kayıt olan mail ile uyuşmuyorsa demo hesap oluştur
-    if (!kayitliUser || kayitliUser.email !== email) {
-        kayitliUser = {
-            ad: "Misafir Kullanıcı",
-            email: email,
-            telefon: "05XX XXX XX XX",
-            rol: "musteri",
-            adresler: []
-        };
+    // Kullanıcı Kontrolü
+    if (!kayitliUser) {
+        alert("Sistemde kayıtlı kullanıcı bulunamadı! Lütfen önce kayıt olun.");
+        return;
     }
 
+    if (kayitliUser.email !== email) {
+        alert("Bu e-posta adresi ile kayıtlı bir hesap bulunamadı.");
+        return;
+    }
+
+    if (kayitliUser.sifre !== sifre) {
+        alert("Hatalı şifre!");
+        return;
+    }
+
+    // Giriş Başarılı
     localStorage.setItem("oturum", "aktif");
     localStorage.setItem("kullanici", JSON.stringify(kayitliUser));
 
