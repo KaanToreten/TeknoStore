@@ -90,7 +90,7 @@ if (!urunler || urunler.length === 0) {
 }
 
 let secilenVaryasyonlar = {};
-let aktifIndirimOrani = 0; // Kupon için
+let aktifIndirimOrani = parseFloat(localStorage.getItem("aktifIndirimOrani")) || 0; // Kupon için
 
 /* =========================================
    2. SAYFA YÜKLENME YÖNETİMİ (INIT)
@@ -171,7 +171,7 @@ function sepeteEkle(id) {
 }
 
 // Detay Sayfasından Sepete Ekle (Varyasyonlu)
-// Detay Sayfasından Sepete Ekle (FİYAT HESAPLAMALI VERSİYON)
+
 function detaydanSepeteEkle(urun, hizliEkle = false) {
     let sepetKey = getSepetKey();
     let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
@@ -182,7 +182,7 @@ function detaydanSepeteEkle(urun, hizliEkle = false) {
         adet = parseInt(document.getElementById("urun-adet").value);
     }
 
-    // --- FİYAT HESAPLAMA (DÜZELTİLEN KISIM) ---
+    // --- FİYAT HESAPLAMA BAŞLANGIÇ ---
     let guncelFiyat = urun.fiyat; // Başlangıç fiyatı
     let varyasyonMetni = "";
 
@@ -193,7 +193,7 @@ function detaydanSepeteEkle(urun, hizliEkle = false) {
 
             // Eğer bu özellik için bir fiyat farkı tanımlıysa ekle
             if (urun.fiyatFarklari && urun.fiyatFarklari[key]) {
-                guncelFiyat += urun.fiyatFarklari[key];
+                guncelFiyat += parseInt(urun.fiyatFarklari[key]);
             }
         }
 
@@ -201,11 +201,10 @@ function detaydanSepeteEkle(urun, hizliEkle = false) {
         varyasyonMetni = Object.entries(secilenVaryasyonlar)
             .map(([key, val]) => `${key}: ${val}`)
             .join(", ");
-    }
-    else if (hizliEkle && urun.secenekler) {
+    } else if (hizliEkle && urun.secenekler) {
         varyasyonMetni = "Varsayılan Seçenekler";
     }
-    // ------------------------------------------
+    // --- FİYAT HESAPLAMA BİTİŞ ---
 
     // Benzersiz Sepet ID'si (Ürün ID + Özellikler)
     const sepetId = urun.id + "_" + varyasyonMetni.replace(/\s/g, '');
@@ -214,14 +213,13 @@ function detaydanSepeteEkle(urun, hizliEkle = false) {
 
     if (varMi) {
         varMi.adet += adet;
-        // Fiyatı güncelle (Belki kullanıcı daha önce eski fiyattan eklemiştir)
-        varMi.fiyat = guncelFiyat;
+        varMi.fiyat = guncelFiyat; // Fiyatı güncelle
     } else {
         sepet.push({
             id: urun.id,
             sepetId: sepetId,
             ad: urun.ad,
-            fiyat: guncelFiyat, // ARTIK HESAPLANMIŞ FİYATI KAYDEDİYORUZ
+            fiyat: guncelFiyat, // HESAPLANMIŞ FİYATI KAYDEDİYORUZ
             resim: urun.resim,
             ozellik: varyasyonMetni,
             adet: adet
@@ -230,7 +228,7 @@ function detaydanSepeteEkle(urun, hizliEkle = false) {
 
     localStorage.setItem(sepetKey, JSON.stringify(sepet));
     sepetGuncelle();
-    alert(`${urun.ad} sepete eklendi! (Birim Fiyat: ${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(guncelFiyat)})`);
+    alert(`${urun.ad} sepete eklendi!\nFiyat: ${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(guncelFiyat)}`);
 }
 
 // Headerdaki Sepet Sayacını Güncelle
@@ -694,6 +692,7 @@ function kuponUygula() {
 
     if (KUPONLAR[kod]) {
         aktifIndirimOrani = KUPONLAR[kod];
+        localStorage.setItem("aktifIndirimOrani", aktifIndirimOrani);
         sepetSayfasiniDoldur();
         alert(`%${aktifIndirimOrani * 100} İndirim Uygulandı!`);
     } else {
@@ -1008,15 +1007,17 @@ function checkoutYukle() {
     }
 
     // 2. Sipariş Özetini Getir
-    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
+    let sepetKey = getSepetKey();
+    let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
     const ozetDiv = document.getElementById("checkout-ozet");
 
     if (ozetDiv) {
-        let toplam = 0;
+        let araToplam = 0;
+        let indirimOrani = parseFloat(localStorage.getItem("aktifIndirimOrani")) || 0;
         ozetDiv.innerHTML = "";
 
         sepet.forEach(u => {
-            toplam += u.fiyat * u.adet;
+            araToplam += u.fiyat * u.adet;
             ozetDiv.innerHTML += `
                 <div class="ozet-satir">
                     <span>${u.ad} (x${u.adet})</span>
@@ -1024,10 +1025,26 @@ function checkoutYukle() {
                 </div>`;
         });
 
+        const indirimTutari = araToplam * indirimOrani;
+        const genelToplam = araToplam - indirimTutari;
+
+        if (indirimOrani > 0) {
+            ozetDiv.innerHTML += `
+                <div class="ozet-satir">
+                    <span>Ara Toplam</span>
+                    <span>${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(araToplam)}</span>
+                </div>
+                <div class="ozet-satir" style="color:green;">
+                    <span>İndirim (%${indirimOrani * 100})</span>
+                    <span>-${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(indirimTutari)}</span>
+                </div>
+            `;
+        }
+
         ozetDiv.innerHTML += `
             <div class="ozet-toplam">
                 <span>Toplam</span>
-                <span>${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(toplam)}</span>
+                <span>${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(genelToplam)}</span>
             </div>`;
     }
 
@@ -1103,10 +1120,13 @@ function siparisiTamamla() {
     }
 
     // 2. Siparişi Oluştur
-    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
+    let sepetKey = getSepetKey();
+    let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
     if (sepet.length === 0) { alert("Sepetiniz boş!"); return; }
 
-    const toplamTutar = sepet.reduce((top, urun) => top + (urun.fiyat * urun.adet), 0);
+    const araToplam = sepet.reduce((top, urun) => top + (urun.fiyat * urun.adet), 0);
+    const indirimOrani = parseFloat(localStorage.getItem("aktifIndirimOrani")) || 0;
+    const toplamTutar = araToplam - (araToplam * indirimOrani);
 
     const yeniSiparis = {
         siparisNo: Math.floor(Math.random() * 900000) + 100000,
@@ -1123,7 +1143,8 @@ function siparisiTamamla() {
     localStorage.setItem("siparisler", JSON.stringify(siparisler));
 
     // Sepeti Temizle
-    localStorage.removeItem("sepet");
+    localStorage.removeItem(sepetKey);
+    localStorage.removeItem("aktifIndirimOrani");
 
     alert(`Siparişiniz Başarıyla Alındı! \nSipariş No: #${yeniSiparis.siparisNo}`);
     window.location.href = "account.html";
