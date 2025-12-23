@@ -1878,3 +1878,172 @@ footer {
     margin-right: 8px;
     font-size: 1.1rem;
 }
+
+/* --- ANA SAYFA SLIDER TASARIMI --- */
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    /* Slider yüksekliği */
+    overflow: hidden;
+    margin-bottom: 30px;
+    background: #000;
+}
+
+.slider-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover !important;
+    background-position: center !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Yazıyı ortala */
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.slide.aktif {
+    opacity: 1;
+    z-index: 1;
+}
+
+/* Slide İçeriği */
+.slide-icerik {
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 20px;
+    animation: slideUp 1s ease;
+}
+
+.slide-icerik .etiket {
+    background: var(--primary-color);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.slide-icerik h2 {
+    font-size: 3rem;
+    line-height: 1.2;
+    margin-bottom: 15px;
+    font-weight: 800;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.slide-icerik p {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    color: #e2e8f0;
+}
+
+.btn-slider {
+    display: inline-block;
+    padding: 12px 35px;
+    background: white;
+    color: #333;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 50px;
+    transition: 0.3s;
+}
+
+.btn-slider:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Oklar ve Noktalar */
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 15px;
+    cursor: pointer;
+    z-index: 10;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.slider-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.slider-btn.prev {
+    left: 20px;
+}
+
+.slider-btn.next {
+    right: 20px;
+}
+
+.slider-noktalar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 10px;
+}
+
+.nokta {
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.nokta.aktif {
+    background: white;
+    transform: scale(1.2);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .slider-container {
+        height: 400px;
+    }
+
+    .slide-icerik h2 {
+        font-size: 1.8rem;
+    }
+
+    .slider-btn {
+        display: none;
+    }
+
+    /* Mobilde okları gizle */
+}

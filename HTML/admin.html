@@ -19,6 +19,58 @@
             window.location.href = "login.html";
         }
     </script>
+    <style>
+        /* Varyasyon Builder Stilleri */
+        .varyasyon-kutu {
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .secenek-baslik-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            align-items: center;
+        }
+
+        .deger-satir {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .deger-container {
+            padding-left: 10px;
+            border-left: 3px solid #e2e8f0;
+        }
+
+        .btn-mini {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-add-val {
+            background: #e0f2fe;
+            /* light blue */
+            color: #0284c7;
+        }
+
+        .btn-del-row {
+            background: #fee2e2;
+            /* light red */
+            color: #ef4444;
+        }
+    </style>
 </head>
 
 <body>
@@ -45,92 +97,212 @@
 
         <div class="admin-sidebar">
             <ul>
-                <li><a href="#" class="active"><i class="fa fa-cube"></i> Ürünler</a></li>
-                <li><a href="#"><i class="fa fa-shopping-cart"></i> Siparişler</a></li>
-                <li><a href="#"><i class="fa fa-users"></i> Kullanıcılar</a></li>
-                <li><a href="#"><i class="fa fa-chart-line"></i> Raporlar</a></li>
-                <li><a href="#"><i class="fa fa-cog"></i> Ayarlar</a></li>
+                <li><a href="javascript:void(0)" onclick="adminPanelGecis('urunler')" class="sidebar-link active"
+                        id="link-urunler"><i class="fa fa-cube"></i> Ürünler</a></li>
+                <li><a href="javascript:void(0)" onclick="adminPanelGecis('siparisler')" class="sidebar-link"
+                        id="link-siparisler"><i class="fa fa-shopping-cart"></i> Siparişler</a></li>
+                <li><a href="javascript:void(0)" onclick="adminPanelGecis('kullanicilar')" class="sidebar-link"
+                        id="link-kullanicilar"><i class="fa fa-users"></i> Kullanıcılar</a></li>
+                <li><a href="javascript:void(0)" onclick="adminPanelGecis('yorumlar')" class="sidebar-link"
+                        id="link-yorumlar"><i class="fa fa-comments"></i> Yorumlar</a></li>
+                <li><a href="javascript:void(0)" onclick="adminPanelGecis('raporlar')" class="sidebar-link"
+                        id="link-raporlar"><i class="fa fa-chart-line"></i> Raporlar</a></li>
+                <!-- Ayarlar şimdilik boş -->
+                <li><a href="javascript:void(0)"><i class="fa fa-cog"></i> Ayarlar</a></li>
             </ul>
         </div>
 
         <div class="admin-content">
-            <div class="baslik-alani">
-                <h2>Ürün Yönetimi</h2>
-                <button class="ekle-btn" onclick="modalAc()">
-                    <i class="fa fa-plus"></i> Yeni Ürün Ekle
-                </button>
+
+            <!-- BÖLÜM 1: ÜRÜNLER -->
+            <div id="bolum-urunler" class="admin-bolum">
+                <div class="baslik-alani">
+                    <h2>Ürün Yönetimi</h2>
+                    <button class="ekle-btn" onclick="yeniUrunModalAc()">
+                        <i class="fa fa-plus"></i> Yeni Ürün Ekle
+                    </button>
+                </div>
+
+                <div class="admin-tablo-kapsayici">
+                    <table class="admin-tablo">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Resim</th>
+                                <th>Ürün Adı</th>
+                                <th>Fiyat</th>
+                                <th>Stok</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-urun-listesi">
+                            <!-- JS ile doldurulacak -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="admin-tablo-kapsayici">
-                <table class="admin-tablo">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Resim</th>
-                            <th>Ürün Adı</th>
-                            <th>Fiyat</th>
-                            <th>Stok</th>
-                            <th>İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>#101</td>
-                            <td><img src="https://via.placeholder.com/40" alt="Urun"></td>
-                            <td>MacBook Pro M2</td>
-                            <td>34.999 TL</td>
-                            <td><span style="color: green; font-weight: bold;">15</span></td>
-                            <td>
-                                <button class="islem-btn duzenle"><i class="fa fa-edit"></i></button>
-                                <button class="islem-btn sil"><i class="fa fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#102</td>
-                            <td><img src="https://via.placeholder.com/40" alt="Urun"></td>
-                            <td>iPhone 14 Pro</td>
-                            <td>42.000 TL</td>
-                            <td><span style="color: orange; font-weight: bold;">4</span></td>
-                            <td>
-                                <button class="islem-btn duzenle"><i class="fa fa-edit"></i></button>
-                                <button class="islem-btn sil"><i class="fa fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- BÖLÜM 2: SİPARİŞLER -->
+            <div id="bolum-siparisler" class="admin-bolum" style="display:none;">
+                <div class="baslik-alani">
+                    <h2>Sipariş Yönetimi</h2>
+                </div>
+                <div class="admin-tablo-kapsayici">
+                    <table class="admin-tablo">
+                        <thead>
+                            <tr>
+                                <th>Sipariş No</th>
+                                <th>Tarih</th>
+                                <th>Müşteri</th>
+                                <th>Tutar</th>
+                                <th>Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-siparis-listesi">
+                            <!-- JS ile doldurulacak -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+            <!-- BÖLÜM 3: KULLANICILAR -->
+            <div id="bolum-kullanicilar" class="admin-bolum" style="display:none;">
+                <div class="baslik-alani">
+                    <h2>Kullanıcı Listesi</h2>
+                </div>
+                <div class="admin-tablo-kapsayici">
+                    <table class="admin-tablo">
+                        <thead>
+                            <tr>
+                                <th>Ad Soyad</th>
+                                <th>Email</th>
+                                <th>Telefon</th>
+                                <th>Rol</th>
+                                <th>Kayıt Tarihi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-kullanici-listesi">
+                            <!-- JS ile doldurulacak -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BÖLÜM 5: YORUMLAR -->
+            <div id="bolum-yorumlar" class="admin-bolum" style="display:none;">
+                <div class="baslik-alani">
+                    <h2>Yorum Yönetimi</h2>
+                </div>
+                <div class="admin-tablo-kapsayici">
+                    <table class="admin-tablo">
+                        <thead>
+                            <tr>
+                                <th>Ürün</th>
+                                <th>Kullanıcı</th>
+                                <th>Puan</th>
+                                <th>Yorum</th>
+                                <th>Tarih</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-yorum-listesi">
+                            <!-- JS ile doldurulacak -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BÖLÜM 4: RAPORLAR -->
+            <div id="bolum-raporlar" class="admin-bolum" style="display:none;">
+                <div class="baslik-alani">
+                    <h2>Genel Raporlar</h2>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div
+                        style="background:#fff; padding:20px; border-radius:10px; border:1px solid #e2e8f0; text-align:center;">
+                        <h3 style="font-size:1rem; color:#64748b;">Toplam Satış</h3>
+                        <p id="rap-toplam-satis"
+                            style="font-size:1.5rem; font-weight:bold; color:#2563eb; margin-top:10px;">0 TL</p>
+                    </div>
+                    <div
+                        style="background:#fff; padding:20px; border-radius:10px; border:1px solid #e2e8f0; text-align:center;">
+                        <h3 style="font-size:1rem; color:#64748b;">Toplam Sipariş</h3>
+                        <p id="rap-toplam-siparis"
+                            style="font-size:1.5rem; font-weight:bold; color:#f59e0b; margin-top:10px;">0</p>
+                    </div>
+                    <div
+                        style="background:#fff; padding:20px; border-radius:10px; border:1px solid #e2e8f0; text-align:center;">
+                        <h3 style="font-size:1rem; color:#64748b;">Toplam Ürün</h3>
+                        <p id="rap-toplam-urun"
+                            style="font-size:1.5rem; font-weight:bold; color:#10b981; margin-top:10px;">0</p>
+                    </div>
+                    <div
+                        style="background:#fff; padding:20px; border-radius:10px; border:1px solid #e2e8f0; text-align:center;">
+                        <h3 style="font-size:1rem; color:#64748b;">Kayıtlı Kullanıcı</h3>
+                        <p id="rap-toplam-kullanici"
+                            style="font-size:1.5rem; font-weight:bold; color:#8b5cf6; margin-top:10px;">0</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </main>
 
-    <form class="modal-form" onsubmit="urunEkle(event)">
-        <div class="form-grup">
-            <label>Ürün Adı</label>
-            <input type="text" id="yeni-urun-ad" required>
-        </div>
-        <div class="form-grup-satir">
-            <div class="form-grup">
-                <label>Fiyat (TL)</label>
-                <input type="number" id="yeni-urun-fiyat" required>
-            </div>
-            <div class="form-grup">
-                <label>Stok Adedi</label>
-                <input type="number" id="yeni-urun-stok" required>
-            </div>
-        </div>
+    <!-- MODAL (Admin İçin) -->
+    <div id="urun-ekle-modal" class="modal">
+        <div class="modal-icerik">
+            <span class="kapat" onclick="modalKapat()">&times;</span>
+            <h2 id="modal-baslik" style="margin-bottom: 20px;">Yeni Ürün Ekle</h2>
+            <form class="modal-form" onsubmit="urunEkle(event)">
+                <input type="hidden" id="duzenlenen-urun-id">
+                <div class="form-grup">
+                    <label>Ürün Adı</label>
+                    <input type="text" id="yeni-urun-ad" required>
+                </div>
+                <div class="form-grup-satir">
+                    <div class="form-grup">
+                        <label>Fiyat (TL)</label>
+                        <input type="number" id="yeni-urun-fiyat" required>
+                    </div>
+                    <div class="form-grup">
+                        <label>Stok Adedi</label>
+                        <input type="number" id="yeni-urun-stok" required>
+                    </div>
+                </div>
 
-        <div class="form-grup">
-            <label>Ürün Resmi Seç</label>
-            <input type="file" id="yeni-urun-resim" accept="image/*">
-        </div>
+                <div class="form-grup">
+                    <label>Ürün Resimleri (Çoklu Seçim)</label>
+                    <input type="file" id="yeni-urun-resim" accept="image/*" multiple>
+                    <small style="color: #666; font-size: 0.8rem;">İpucu: Birden fazla resim seçmek için CTRL/CMD tuşuna
+                        basılı tutun.</small>
+                </div>
 
-        <button type="submit" class="siparis-btn" style="margin-top: 10px;">Kaydet</button>
-    </form>
+                <div class="form-grup">
+                    <label style="display:flex; justify-content:space-between; align-items:center;">
+                        Ürün Seçenekleri
+                        <button type="button" onclick="varyasyonSatiriEkle()"
+                            style="background:#2563eb; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.8rem;">+
+                            Ekle</button>
+                    </label>
+                    <div id="varyasyon-container"
+                        style="border:1px solid #e2e8f0; padding:10px; border-radius:8px; background:#f8fafc;">
+                        <!-- Dinamik satırlar buraya gelecek -->
+                        <p id="varyasyon-yok-mesaj" style="font-size:0.85rem; color:#94a3b8; text-align:center;">Henüz
+                            seçenek eklenmedi.</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="siparis-btn" style="margin-top: 10px;">Kaydet</button>
+            </form>
+        </div>
+    </div>
 
     <footer>
         <p>&copy; 2025 TeknoStore Yönetim Paneli.</p>
     </footer>
 
+    <script src="../JS/script.js"></script>
     <script>
         // Modal İşlemleri
         const modal = document.getElementById('urun-ekle-modal');
