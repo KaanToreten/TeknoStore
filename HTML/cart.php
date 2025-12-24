@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="tr">
 
@@ -15,7 +18,7 @@
     <header>
         <div class="container">
             <div class="logo">
-                <a href="index.html" style="text-decoration:none;">
+                <a href="index.php" style="text-decoration:none;">
                     <h1>TeknoStore</h1>
                 </a>
             </div>
@@ -23,15 +26,22 @@
                 <input type="text" placeholder="Ürün ara...">
                 <button type="button"><i class="fa fa-search"></i></button>
             </div>
-            <div class="sepet-alani" style="display: flex; gap: 10px;">
-                <a href="account.html" class="sepet-btn"
-                    style="background-color: var(--light-bg); border-color: var(--border-color); color: var(--text-primary);">
-                    <i class="fa fa-user"></i> Hesap
-                </a>
-                <a href="cart.html" class="sepet-btn">
-                    <i class="fa fa-shopping-cart"></i> Sepetim (<span id="sepet-sayac">0</span>)
-                </a>
+            <div class="hesap-menu">
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="account.php" style="font-weight:bold; color:var(--primary-color);">
+                        <i class="fa fa-user-circle"></i> <?php echo htmlspecialchars($_SESSION['user_name']); ?>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="account.php">Siparişlerim</a>
+                        <a href="logout.php">Çıkış Yap</a>
+                    </div>
+                <?php else: ?>
+                    <a href="login.php" id="giris-link"><i class="fa fa-user"></i> Giriş Yap / Kayıt Ol</a>
+                <?php endif; ?>
             </div>
+            <a href="cart.php" class="sepet-btn">
+                <i class="fa fa-shopping-cart"></i> Sepetim (<span id="sepet-sayac">0</span>)
+            </a>
         </div>
     </header>
 

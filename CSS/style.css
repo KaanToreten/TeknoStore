@@ -1837,46 +1837,81 @@ footer {
     border: 1px solid #f1f5f9;
 }
 
-/* --- TAKSİT TABLOSU STİLLERİ (Detail.html) --- */
+/* --- TAKSİT TABLOSU GELİŞMİŞ TASARIM --- */
 .taksit-tablosu-container {
-    padding: 10px;
-    background: #f8fafc;
-    border-radius: 8px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
     border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .taksit-tablosu {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    /* Kenarlıkların ayrılmasına izin ver */
+    border-spacing: 0;
+    /* Boşlukları sıfırla */
     font-size: 0.95rem;
 }
 
 .taksit-tablosu th {
     text-align: left;
-    padding: 12px 15px;
-    background-color: #eff6ff;
-    color: #1e293b;
-    font-weight: 600;
+    padding: 15px;
+    background-color: #f8fafc;
+    color: #334155;
+    font-weight: 700;
     border-bottom: 2px solid #e2e8f0;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
 }
 
 .taksit-tablosu td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #e2e8f0;
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
     color: #475569;
+    vertical-align: middle;
 }
 
-.taksit-tablosu tr:last-child td {
+/* Satır Hover Efekti */
+.taksit-tablosu tbody tr:hover {
+    background-color: #f8fafc;
+    transition: background-color 0.2s;
+}
+
+/* Son satırın alt çizgisini kaldır */
+.taksit-tablosu tbody tr:last-child td {
     border-bottom: none;
 }
 
-.taksit-tablosu tr:hover {
-    background-color: white;
+/* Banka İkonları ve Yazı */
+.taksit-tablosu td:first-child {
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .taksit-tablosu i {
-    margin-right: 8px;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    background: #eff6ff;
+    padding: 8px;
+    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tutar Sütunları */
+.taksit-tablosu td:nth-child(3),
+.taksit-tablosu td:nth-child(4) {
+    font-family: 'Consolas', monospace;
+    /* Rakamlar hizalı dursun */
+    font-weight: 600;
 }
 
 /* --- ANA SAYFA SLIDER TASARIMI --- */
@@ -2036,14 +2071,293 @@ footer {
     .slider-container {
         height: 400px;
     }
+}
 
-    .slide-icerik h2 {
-        font-size: 1.8rem;
+.slide-icerik h2 {
+    font-size: 1.8rem;
+}
+
+.slider-btn {
+    display: none;
+}
+
+/* Mobilde okları gizle */
+
+/* --- MODERN ADMIN PANEL (RENAMED & FIXED) --- */
+
+.admin-header {
+    background: #ffffff;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.admin-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #2563eb;
+}
+
+.admin-brand span {
+    color: #1f2937;
+    font-weight: 300;
+    font-size: 1.1rem;
+    padding-left: 10px;
+    border-left: 1px solid #e5e7eb;
+    margin-left: 10px;
+}
+
+.admin-header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-user-info {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.admin-btn-logout {
+    background-color: #ef4444;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+}
+
+.admin-btn-logout:hover {
+    opacity: 0.9;
+}
+
+/* Layout */
+.admin-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* Sidebar */
+.admin-sidebar-nav {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.admin-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #6b7280;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.admin-menu-item:hover {
+    background-color: #f8fafc;
+    color: #2563eb;
+}
+
+.admin-menu-item.active {
+    background-color: #eff6ff;
+    color: #2563eb;
+}
+
+.admin-menu-item i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Main Card */
+.admin-main-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    min-height: 80vh;
+}
+
+.admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.admin-page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+    white-space: nowrap;
+    /* Prevent wrapping */
+}
+
+.admin-btn-add {
+    background-color: #2563eb;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+    margin-left: auto;
+    /* Push to right */
+    white-space: nowrap;
+}
+
+.admin-btn-add:hover {
+    background-color: #1d4ed8;
+}
+
+/* Table */
+.admin-table-container {
+    overflow-x: auto;
+}
+
+.admin-products-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-products-table th {
+    text-align: left;
+    padding: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.admin-products-table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1f2937;
+    font-size: 0.95rem;
+}
+
+.admin-products-table tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-product-img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 6px;
+    padding: 2px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+}
+
+.admin-stock-badge {
+    font-weight: 700;
+}
+
+.text-green {
+    color: #10b981;
+}
+
+.text-red {
+    color: #ef4444;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.admin-btn-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.admin-btn-edit {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #dbeafe;
+}
+
+.admin-btn-edit:hover {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.admin-btn-delete {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+}
+
+.admin-btn-delete:hover {
+    background-color: #ef4444;
+    color: white;
+    border-color: #ef4444;
+}
+
+.admin-alert {
+    padding: 1rem;
+    background-color: #ecfdf5;
+    color: #047857;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #d1fae5;
+}
+
+@media (max-width: 1024px) {
+    .admin-wrapper {
+        grid-template-columns: 1fr;
     }
 
-    .slider-btn {
-        display: none;
+    .admin-sidebar-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
-    /* Mobilde okları gizle */
+    .admin-menu-item {
+        margin: 0;
+    }
 }

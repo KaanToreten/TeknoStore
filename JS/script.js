@@ -106,9 +106,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const path = window.location.pathname;
 
     // 1. Ürün Listeleme Sayfası (products.html veya index.html)
-    if (document.getElementById("urun-listesi")) {
-        urunleriListele();
-    }
+    // if (document.getElementById("urun-listesi")) {
+    //     urunleriListele();
+    //}
 
     // 2. Sepet Sayfası (cart.html)
     if (document.querySelector(".sepet-listesi")) {
@@ -1093,63 +1093,62 @@ function adresDoldur() {
     }
 }
 
-// SİPARİŞİ VE ADRESİ KAYDET (checkout.html)
+/* =========================================
+   GÜNCELLENMİŞ SİPARİŞ FONKSİYONU (DATABASE İÇİN)
+   ========================================= */
 function siparisiTamamla() {
     const baslik = document.getElementById("adres-baslik").value;
     const sehir = document.getElementById("adres-sehir").value;
     const acik = document.getElementById("adres-acik").value;
-    const kaydetCheckbox = document.getElementById("adresi-kaydet");
-
+    const kullanici = JSON.parse(localStorage.getItem("kullanici"));
     if (!baslik || !sehir || !acik) {
         alert("Lütfen adres bilgilerini eksiksiz doldurun.");
         return;
     }
 
-    let kullanici = JSON.parse(localStorage.getItem("kullanici"));
+    const tamAdres = `${baslik} - ${sehir} (${acik})`;
+    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
 
-    // 1. Adresi Kaydetme İsteği
-    if (kaydetCheckbox && kaydetCheckbox.checked) {
-        if (!kullanici.adresler) kullanici.adresler = [];
-
-        // Aynı başlık varsa ekleme yapma basit kontrolü
-        const varMi = kullanici.adresler.find(a => a.baslik === baslik);
-        if (!varMi) {
-            kullanici.adresler.push({ baslik: baslik, sehir: sehir, acik: acik });
-            localStorage.setItem("kullanici", JSON.stringify(kullanici));
-        }
+    if (sepet.length === 0) {
+        alert("Sepetiniz boş!");
+        return;
     }
 
-    // 2. Siparişi Oluştur
-    let sepetKey = getSepetKey();
-    let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
-    if (sepet.length === 0) { alert("Sepetiniz boş!"); return; }
+    const toplamTutar = sepet.reduce((top, urun) => top + (urun.fiyat * urun.adet), 0);
 
-    const araToplam = sepet.reduce((top, urun) => top + (urun.fiyat * urun.adet), 0);
-    const indirimOrani = parseFloat(localStorage.getItem("aktifIndirimOrani")) || 0;
-    const toplamTutar = araToplam - (araToplam * indirimOrani);
-
-    const yeniSiparis = {
-        siparisNo: Math.floor(Math.random() * 900000) + 100000,
-        tarih: new Date().toLocaleDateString('tr-TR'),
-        tutar: toplamTutar,
-        durum: "Hazırlanıyor",
-        teslimatAdresi: `${baslik} (${sehir})`,
-        kullaniciEmail: kullanici.email, // EKLENDİ: Siparişi kullanıcıya bağla
-        urunler: sepet
+    // Veriyi Hazırla
+    const siparisVerisi = {
+        adres: tamAdres,
+        toplam: toplamTutar,
+        sepet: sepet
     };
 
-    let siparisler = JSON.parse(localStorage.getItem("siparisler")) || [];
-    siparisler.push(yeniSiparis);
-    localStorage.setItem("siparisler", JSON.stringify(siparisler));
-
-    // Sepeti Temizle
-    localStorage.removeItem(sepetKey);
-    localStorage.removeItem("aktifIndirimOrani");
-
-    alert(`Siparişiniz Başarıyla Alındı! \nSipariş No: #${yeniSiparis.siparisNo}`);
-    window.location.href = "account.html";
+    // PHP'ye Gönder (AJAX / Fetch API)
+    fetch('api_checkout.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(siparisVerisi)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert("Siparişiniz Başarıyla Alındı! Sipariş No: #" + data.order_id);
+                localStorage.removeItem("sepet"); // Sepeti temizle
+                window.location.href = "account.php"; // Profil sayfasına git
+            } else {
+                alert("Hata: " + data.message);
+                if (data.message.includes("giriş")) {
+                    window.location.href = "login.php";
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            alert("Bir bağlantı hatası oluştu.");
+        });
 }
-
 // Diğer yardımcı fonksiyonlar...
 function adetDegistir(miktar) {
     const input = document.getElementById("urun-adet");
