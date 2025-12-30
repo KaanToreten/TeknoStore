@@ -84,7 +84,7 @@ session_start();
                         <span id="genel-toplam">0,00 TL</span>
                     </div>
 
-                    <button onclick="window.location.href='checkout.html'" class="sepet-onayla-btn">
+                    <button onclick="window.location.href='checkout.php'" class="sepet-onayla-btn">
                         Sepeti Onayla <i class="fa fa-chevron-right"></i>
                     </button>
                 </div>
@@ -95,6 +95,13 @@ session_start();
     <footer>
         <p>&copy; 2025 TeknoStore. Web Programlama Dersi Projesi.</p>
     </footer>
+
+    <script>
+        const phpKullanici = {
+            email: "<?php echo isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''; ?>",
+            girisYapti: <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>
+        };
+    </script>
 
     <script src="../JS/script.js"></script>
 

@@ -55,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Oturumu Başlat
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['full_name'];
+                $_SESSION['user_email'] = $user['email'];
                 $_SESSION['user_role'] = $user['role']; // admin veya customer
 
                 // Role göre yönlendir
@@ -138,10 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <a href="#">Şifremi Unuttum?</a>
                     <button type="submit">Giriş Yap</button>
 
-                    <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-                        <a href="guvensiz_login.php" style="color: red; font-size: 11px;">(Ödev Demo) Güvensiz Giriş
-                            Sayfası</a>
-                    </div>
+
                     <?php if ($mesaj)
                         echo "<p style='color:red; font-size:12px;'>$mesaj</p>"; ?>
                 </form>
@@ -163,6 +161,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
+
+    <script>
+        const phpKullanici = {
+            email: "<?php echo isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''; ?>",
+            girisYapti: <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>
+        };
+    </script>
 
     <script src="../JS/script.js"></script>
 </body>

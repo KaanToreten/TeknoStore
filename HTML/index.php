@@ -28,17 +28,22 @@ require_once '../db.php';
                 <input type="text" placeholder="Ürün ara...">
                 <button type="button"><i class="fa fa-search"></i></button>
             </div>
-            <div class="hesap-menu">
+            <div class="user-actions">
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <a href="account.php" style="font-weight:bold; color:var(--primary-color);">
-                        <i class="fa fa-user-circle"></i> <?php echo htmlspecialchars($_SESSION['user_name']); ?>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="account.php">Siparişlerim</a>
-                        <a href="logout.php">Çıkış Yap</a>
+                    <div class="user-profile">
+                        <i class="fa fa-user-circle"></i>
+                        <span><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                     </div>
+                    <a href="hesabim.php" class="btn-header-action btn-orders">
+                        <i class="fa fa-box-open"></i> Siparişlerim
+                    </a>
+                    <a href="logout.php" class="btn-header-action btn-logout-client">
+                        <i class="fa fa-sign-out"></i> Çıkış
+                    </a>
                 <?php else: ?>
-                    <a href="login.php" id="giris-link"><i class="fa fa-user"></i> Giriş Yap / Kayıt Ol</a>
+                    <a href="login.php" class="btn-header-action btn-login">
+                        <i class="fa fa-user"></i> Giriş Yap / Kayıt Ol
+                    </a>
                 <?php endif; ?>
             </div>
             <a href="cart.php" class="sepet-btn">
@@ -76,7 +81,7 @@ require_once '../db.php';
                     <span class="etiket" style="background:#f59e0b;">Yeni Sezon</span>
                     <h2>Geleceği Kodla:<br>En Yeni Donanımlar Burada</h2>
                     <p>Yazılım ve mühendislik öğrencileri için özel setler.</p>
-                    <a href="products.html" class="btn-slider">Alışverişe Başla</a>
+                    <a href="products.php" class="btn-slider">Alışverişe Başla</a>
                 </div>
             </div>
 
@@ -107,13 +112,8 @@ require_once '../db.php';
 
         <section class="urun-vitrini" id="urun-listesi">
             <?php
-            // Son 8 ürünü çekelim
+
             try {
-                // Veritabanı bağlantısı zaten yukarıda index.php başında 'db.php' çağrılmıyor, ekleyelim.
-                // Not: index.php başında session_start var ama db.php yok. Onu da eklememiz lazım.
-                // Burada geçici olarak db bağlantısını kullanıyoruz, ama en tepeye require eklemek daha doğru.
-                // Replace yaparken en tepeye de ekleyeceğim.
-            
                 $stmt = $pdo->query("SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id ORDER BY p.id DESC LIMIT 8");
                 $home_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -150,6 +150,13 @@ require_once '../db.php';
     <footer>
         <p>&copy; 2025 TeknoStore. Web Programlama Dersi Projesi.</p>
     </footer>
+
+    <script>
+        const phpKullanici = {
+            email: "<?php echo isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''; ?>",
+            girisYapti: <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>
+        };
+    </script>
 
     <script src="../JS/script.js"></script>
 

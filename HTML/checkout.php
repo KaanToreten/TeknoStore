@@ -97,10 +97,10 @@ session_start();
 
     <header>
         <div class="container">
-            <div class="logo"><a href="index.html" style="text-decoration:none;">
+            <div class="logo"><a href="index.php" style="text-decoration:none;">
                     <h1>TeknoStore</h1>
                 </a></div>
-            <div class="sepet-alani"><a href="cart.html" class="sepet-btn">Sepete Dön</a></div>
+            <div class="sepet-alani"><a href="cart.php" class="sepet-btn">Sepete Dön</a></div>
         </div>
     </header>
 
@@ -202,6 +202,12 @@ session_start();
         </div>
     </main>
 
+    <script>
+        const phpKullanici = {
+            email: "<?php echo isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''; ?>",
+            girisYapti: <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>
+        };
+    </script>
     <script src="../JS/script.js"></script>
 </body>
 

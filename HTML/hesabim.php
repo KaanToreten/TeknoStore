@@ -2,19 +2,10 @@
 session_start();
 require_once '../db.php';
 
-// DEBUG - Session kontrol
-echo "<h3>Session Debug:</h3>";
-echo "<pre>";
-print_r($_SESSION);
-echo "</pre>";
-
 // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
 if (!isset($_SESSION['user_id'])) {
-    echo "<p style='color:red'>SESSION[user_id] YOK! Login'e yonlendirilecekti...</p>";
-    echo "<a href='login.php'>Login sayfasina git</a>";
+    header("Location: login.php");
     exit;
-    // header("Location: login.php");
-    // exit;
 }
 
 $user_id = $_SESSION['user_id'];

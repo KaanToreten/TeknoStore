@@ -33,10 +33,12 @@ try {
     // Yeni oluşturulan siparişin ID'sini al
     $order_id = $pdo->lastInsertId();
 
-    // 2. Sepetteki her ürünü 'order_items' tablosuna ekle
+    // 2. Sepetteki her ürünü 'order_items' tablosuna ekle ve stoktan düş
     $stmt_item = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase) VALUES (?, ?, ?, ?)");
+    $stmt_stock = $pdo->prepare("UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?");
 
     foreach ($sepet as $urun) {
+        // Sipariş detayını kaydet
         $stmt_item->execute([
             $order_id,
             $urun['id'],
@@ -44,7 +46,12 @@ try {
             $urun['fiyat']
         ]);
 
-        // (Opsiyonel) Stoktan düşmek istersen buraya UPDATE products SET stock = stock - adet... eklenebilir.
+        // Stoktan düş
+        $stmt_stock->execute([
+            $urun['adet'],  // Düşülecek miktar
+            $urun['id'],    // Ürün ID
+            $urun['adet']   // Stok kontrolü (stok >= adet olmalı)
+        ]);
     }
 
     $pdo->commit();

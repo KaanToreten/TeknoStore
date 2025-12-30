@@ -1,126 +1,26 @@
 /* =========================================
-   1. VERİ VE SABİTLER (ÜRÜNLER - GÜNCELLENMİŞ)
+   TEKNOSTORE - TEMİZLENMİŞ JS DOSYASI (PHP UYUMLU)
    ========================================= */
-let urunler = JSON.parse(localStorage.getItem("urunler"));
 
-if (!urunler || urunler.length === 0) {
-    urunler = [
-        {
-            id: 1,
-            ad: "MacBook Pro M3",
-            kategori: "bilgisayar",
-            fiyat: 75000,
-            resim: "../IMG/macbook.jpg",
-            stok: 15,
-            aciklama: "Yeni nesil Apple M3 Pro çip ile güçlendirilmiş MacBook Pro.",
-            secenekler: { "Renk": ["Gümüş", "Uzay Grisi"], "RAM": ["16GB", "32GB"], "SSD": ["512GB", "1TB"] },
-            // YENİ EKLENEN KISIM: Fiyat Farkları
-            fiyatFarklari: {
-                "RAM|32GB": 8000,   // 32GB seçilirse 8000 TL ekle
-                "SSD|1TB": 5000     // 1TB seçilirse 5000 TL ekle
-            }
-        },
-        {
-            id: 2,
-            ad: "iPhone 15 Pro",
-            kategori: "telefon",
-            fiyat: 65000,
-            resim: "../IMG/iphone15pro.jpg",
-            stok: 10,
-            aciklama: "Havacılık sınıfı titanyum tasarım. A17 Pro çip.",
-            secenekler: { "Renk": ["Titanyum Mavi", "Titanyum Naturel", "Siyah"], "Hafıza": ["128GB", "256GB", "512GB"] },
-            // YENİ EKLENEN KISIM
-            fiyatFarklari: {
-                "Hafıza|256GB": 4000,
-                "Hafıza|512GB": 9000
-            }
-        },
-        {
-            id: 3,
-            ad: "Sony WH-1000XM5",
-            kategori: "aksesuar",
-            fiyat: 12000,
-            resim: "../IMG/kulaklik.jpg",
-            stok: 25,
-            aciklama: "Endüstri lideri gürültü engelleme.",
-            secenekler: { "Renk": ["Siyah", "Gümüş"] }
-            // Fiyat farkı yoksa yazmana gerek yok
-        },
-        {
-            id: 4,
-            ad: "iPad Air 5",
-            kategori: "tablet",
-            fiyat: 22000,
-            resim: "../IMG/ipad5air.png",
-            stok: 8,
-            aciklama: "Apple M1 çipin çığır açan performansı.",
-            secenekler: { "Renk": ["Uzay Grisi", "Mavi", "Pembe"], "Hafıza": ["64GB", "256GB"], "Bağlantı": ["Wi-Fi", "Wi-Fi + Cellular"] },
-            fiyatFarklari: {
-                "Hafıza|256GB": 3000,
-                "Bağlantı|Wi-Fi + Cellular": 4500
-            }
-        },
-        {
-            id: 5,
-            ad: "Dell XPS 15",
-            kategori: "bilgisayar",
-            fiyat: 85000,
-            resim: "../IMG/notebook.jpg",
-            stok: 5,
-            aciklama: "Sınırları zorlayan performans.",
-            secenekler: { "İşlemci": ["i7", "i9"], "RAM": ["16GB", "32GB"], "Ekran": ["FHD+", "OLED 3.5K"] },
-            fiyatFarklari: {
-                "İşlemci|i9": 10000,
-                "RAM|32GB": 4000,
-                "Ekran|OLED 3.5K": 6000
-            }
-        },
-        {
-            id: 6,
-            ad: "Logitech MX Master 3S",
-            kategori: "aksesuar",
-            fiyat: 4500,
-            resim: "../IMG/mouse.jpg",
-            stok: 40,
-            aciklama: "Simgeleşmiş MX Master 3S.",
-            secenekler: { "Renk": ["Grafit", "Açık Gri"] }
-        }
-    ];
-    localStorage.setItem("urunler", JSON.stringify(urunler));
-}
-
+// GLOBAL DEĞİŞKENLER
+let aktifIndirimOrani = parseFloat(localStorage.getItem("aktifIndirimOrani")) || 0;
 let secilenVaryasyonlar = {};
-let aktifIndirimOrani = parseFloat(localStorage.getItem("aktifIndirimOrani")) || 0; // Kupon için
 
 /* =========================================
-   2. SAYFA YÜKLENME YÖNETİMİ (INIT)
+   1. SAYFA YÜKLENME YÖNETİMİ (INIT)
    ========================================= */
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Genel Başlatıcılar
-    sepetGuncelle();
-    oturumHeaderKontrol();
-    aramaMotorunuBaslat();
+    // 1. Genel Başlatıcılar
+    sepetGuncelle();      // Sepet sayısını (header) güncelle
+    aramaMotorunuBaslat(); // Arama kutusunu aktifleştir
 
-    // Sayfaya Göre Çalışacak Kodlar
-    const path = window.location.pathname;
-
-    // 1. Ürün Listeleme Sayfası (products.html veya index.html)
-    // if (document.getElementById("urun-listesi")) {
-    //     urunleriListele();
-    //}
-
-    // 2. Sepet Sayfası (cart.html)
-    if (document.querySelector(".sepet-listesi")) {
-        sepetSayfasiniDoldur();
+    // Slider varsa başlat (Sadece index.php'de var)
+    if (document.querySelector(".slider-container")) {
+        sliderBaslat();
     }
 
-    // 3. Detay Sayfası (detail.html)
-    if (path.includes("detail.html")) {
-        detaySayfasiniYukle();
-    }
-
-    // 4. Login/Register Sayfası (Slider Animasyonu)
+    // Login/Register Sayfası Animasyonu (login.php)
     const container = document.getElementById('container');
     const signUpButton = document.getElementById('signUp');
     const signInButton = document.getElementById('signIn');
@@ -129,98 +29,81 @@ document.addEventListener("DOMContentLoaded", () => {
         signInButton.addEventListener('click', () => container.classList.remove("right-panel-active"));
     }
 
-
-    // 5. Admin Sayfası
-    if (path.includes("admin.html")) {
-        adminUrunleriListele();
+    // Sepet Sayfası (cart.php)
+    if (document.querySelector(".sepet-listesi")) {
+        sepetSayfasiniDoldur();
     }
+
+    // Checkout (Ödeme) Sayfası
+    if (window.location.pathname.includes("checkout.php")) {
+        checkoutYukle();
+    }
+
+    // NOT: Admin, Ürün Listeleme ve Detay sayfaları artık PHP tarafından dolduruluyor.
+    // JS'in onlara karışmasına gerek yok.
 });
 
 
 /* =========================================
-   3. SEPET YÖNETİMİ (MERKEZİ)
+   2. SEPET YÖNETİMİ (MERKEZİ)
    ========================================= */
 
-// Sepete Ekle (Listeden Hızlı Ekleme)
-// YARDIMCI: Sepet Anahtarını Belirle (Her kullanıcı için ayrı)
+// YARDIMCI: Sepet Anahtarını Belirle (PHP Session'a Göre)
 function getSepetKey() {
-    const oturum = localStorage.getItem("oturum");
-    const kullanici = JSON.parse(localStorage.getItem("kullanici"));
-    if (oturum === "aktif" && kullanici && kullanici.email) {
-        return `sepet_${kullanici.email}`;
+    // Sayfaya PHP tarafından bırakılan değişkene bak
+    if (typeof phpKullanici !== 'undefined' && phpKullanici.girisYapti && phpKullanici.email) {
+        return `sepet_${phpKullanici.email}`;
     }
-    return "sepet";
+    // Giriş yapmamışsa genel sepet
+    return "sepet_misafir";
 }
 
-// LocalStorage'dan Kullanıcıları Al veya Mock Data Yükle
-let kullanicilar = JSON.parse(localStorage.getItem("kullanicilar"));
-if (!kullanicilar || kullanicilar.length === 0) {
-    kullanicilar = [
-        { ad: "Ahmet Yılmaz", email: "ahmet@gmail.com", telefon: "05554443322", rol: "musteri", kayitTarihi: "01.01.2024" },
-        { ad: "Mehmet Demir", email: "mehmet@test.com", telefon: "05321234567", rol: "musteri", kayitTarihi: "15.02.2024" },
-        { ad: "Ayşe Kaya", email: "ayse@demo.com", telefon: "05449876543", rol: "musteri", kayitTarihi: "20.03.2024" }
-    ];
-    localStorage.setItem("kullanicilar", JSON.stringify(kullanicilar));
-}
-
-function sepeteEkle(id) {
-    const urun = urunler.find(u => u.id === id);
-    // Hızlı eklemede varsayılan varyasyonlar seçilmediği için boş gönderiyoruz
-    // veya ilk seçenekleri otomatik seçtirebilirsin. Basitlik için direkt ekliyoruz.
-    detaydanSepeteEkle(urun, true);
-}
-
-// Detay Sayfasından Sepete Ekle (Varyasyonlu)
+// A. PHP'DEN GELEN ÜRÜNÜ SEPETE EKLE (Detail.php ve Products.php için)
 
 function detaydanSepeteEkle(urun, hizliEkle = false) {
     let sepetKey = getSepetKey();
     let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
     let adet = 1;
 
-    // Adet bilgisini al
-    if (!hizliEkle && document.getElementById("urun-adet")) {
-        adet = parseInt(document.getElementById("urun-adet").value);
+    // Adet bilgisini al (Sadece detay sayfasında varsa)
+    const adetInput = document.getElementById("urun-adet");
+    if (!hizliEkle && adetInput) {
+        adet = parseInt(adetInput.value);
     }
 
-    // --- FİYAT HESAPLAMA BAŞLANGIÇ ---
-    let guncelFiyat = urun.fiyat; // Başlangıç fiyatı
+    // --- FİYAT HESAPLAMA (Varyasyon Fiyat Farkları) ---
+    // Not: PHP'den gelen ürün objesinde 'price' (fiyat) ve varsa 'fiyatFarklari' olmalı.
+    let guncelFiyat = parseFloat(urun.price || urun.fiyat);
     let varyasyonMetni = "";
 
+    // Eğer detay sayfasındaysak ve seçim yapıldıysa
     if (!hizliEkle && Object.keys(secilenVaryasyonlar).length > 0) {
-        // Seçilen özelliklere göre fiyatı artır
-        for (const [baslik, deger] of Object.entries(secilenVaryasyonlar)) {
-            const key = `${baslik}|${deger}`; // Örn: "Hafıza|256GB"
-
-            // Eğer bu özellik için bir fiyat farkı tanımlıysa ekle
-            if (urun.fiyatFarklari && urun.fiyatFarklari[key]) {
-                guncelFiyat += parseInt(urun.fiyatFarklari[key]);
-            }
-        }
-
-        // Metni oluştur (Örn: "Renk: Siyah, Hafıza: 256GB")
         varyasyonMetni = Object.entries(secilenVaryasyonlar)
             .map(([key, val]) => `${key}: ${val}`)
             .join(", ");
-    } else if (hizliEkle && urun.secenekler) {
-        varyasyonMetni = "Varsayılan Seçenekler";
+
+        // Fiyat farkı hesabı (Gelişmiş özellik)
+        // Bu özellik için ürün objesinde fiyat farklarının olması gerekir.
+        // Şimdilik standart fiyat üzerinden gidiyoruz, ileride eklenebilir.
+    } else {
+        // Hızlı ekleme veya seçim yoksa
+        varyasyonMetni = urun.ozellik || "Standart";
     }
-    // --- FİYAT HESAPLAMA BİTİŞ ---
 
-    // Benzersiz Sepet ID'si (Ürün ID + Özellikler)
+    // Benzersiz Sepet ID'si
     const sepetId = urun.id + "_" + varyasyonMetni.replace(/\s/g, '');
-
     const varMi = sepet.find(item => item.sepetId === sepetId);
 
     if (varMi) {
         varMi.adet += adet;
-        varMi.fiyat = guncelFiyat; // Fiyatı güncelle
+        // Fiyat güncellenmesi gerekiyorsa buraya eklenebilir
     } else {
         sepet.push({
             id: urun.id,
             sepetId: sepetId,
-            ad: urun.ad,
-            fiyat: guncelFiyat, // HESAPLANMIŞ FİYATI KAYDEDİYORUZ
-            resim: urun.resim,
+            ad: urun.name || urun.ad, // PHP genelde 'name' gönderir
+            fiyat: guncelFiyat,
+            resim: urun.image_url ? (urun.image_url.startsWith("IMG") ? "../" + urun.image_url : urun.image_url) : urun.resim,
             ozellik: varyasyonMetni,
             adet: adet
         });
@@ -228,17 +111,12 @@ function detaydanSepeteEkle(urun, hizliEkle = false) {
 
     localStorage.setItem(sepetKey, JSON.stringify(sepet));
     sepetGuncelle();
-    alert(`${urun.ad} sepete eklendi!\nFiyat: ${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(guncelFiyat)}`);
+
+    // Şık bir bildirim
+    alert(`${urun.name || urun.ad} sepete eklendi!`);
 }
 
-// Headerdaki Sepet Sayacını Güncelle
-function sepetGuncelle() {
-    let sepet = JSON.parse(localStorage.getItem(getSepetKey())) || [];
-    const toplamAdet = sepet.reduce((toplam, urun) => toplam + urun.adet, 0);
-    document.querySelectorAll("#sepet-sayac").forEach(el => el.innerText = toplamAdet);
-}
-
-// Sepet Sayfasını Doldur (Ve Boşsa Ortala)
+// B. SEPET SAYFASINI DOLDUR (cart.php)
 function sepetSayfasiniDoldur() {
     const sepetListesi = document.querySelector(".sepet-listesi");
     const sepetWrapper = document.querySelector(".sepet-wrapper");
@@ -249,28 +127,19 @@ function sepetSayfasiniDoldur() {
     let sepetKey = getSepetKey();
     let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
 
-    // --- TAMİR KODU (Eski verileri düzelt) ---
-    sepet = sepet.map(u => {
-        if (!u.sepetId) u.sepetId = u.id + "_" + Math.random().toString(36).substr(2, 5);
-        return u;
-    });
-    localStorage.setItem(sepetKey, JSON.stringify(sepet));
-    // ----------------------------------------
-
     sepetListesi.innerHTML = "";
 
     // DURUM: SEPET BOŞ
     if (sepet.length === 0) {
-        // CSS ile ortalamak için wrapper'a 'bos' sınıfı ekle
         if (sepetWrapper) sepetWrapper.classList.add("bos");
-
         sepetListesi.innerHTML = `
             <div class="bos-sepet-mesaj">
                 <i class="fa fa-shopping-basket" style="font-size:60px; color:#cbd5e1; margin-bottom:20px;"></i>
                 <h3 style="color:#334155;">Sepetiniz şu an boş.</h3>
                 <p style="color:#64748b; margin-bottom:20px;">Hemen alışverişe başlayıp harika ürünleri keşfedin!</p>
-                <a href="products.html" class="btn-primary" style="display:inline-block; padding:12px 30px; background:var(--primary-color); color:white; border-radius:8px; text-decoration:none; font-weight:600;">Alışverişe Başla</a>
+                <a href="products.php" class="btn-primary" style="display:inline-block; padding:12px 30px; background:var(--primary-color); color:white; border-radius:8px; text-decoration:none; font-weight:600;">Alışverişe Başla</a>
             </div>`;
+        if (ozetAlan) ozetAlan.style.display = "none";
         return;
     }
 
@@ -307,21 +176,36 @@ function sepetSayfasiniDoldur() {
     const indirimTutari = araToplam * aktifIndirimOrani;
     const genelToplam = araToplam - indirimTutari;
 
-    document.getElementById("ara-toplam").innerText = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(araToplam);
-    document.getElementById("genel-toplam").innerText = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(genelToplam);
+    // Ara Toplam
+    const araToplamEl = document.getElementById("ara-toplam");
+    if (araToplamEl) araToplamEl.innerText = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(araToplam);
 
-    // İndirim Gösterimi
+    // İndirim Satırı (Kupon varsa göster)
     const indirimSatiri = document.getElementById("indirim-satiri");
-    if (aktifIndirimOrani > 0 && indirimSatiri) {
+    const indirimOraniEl = document.getElementById("indirim-orani");
+    const indirimTutariEl = document.getElementById("indirim-tutari");
+
+    if (indirimSatiri && aktifIndirimOrani > 0) {
         indirimSatiri.style.display = "flex";
-        document.getElementById("indirim-orani").innerText = `%${aktifIndirimOrani * 100}`;
-        document.getElementById("indirim-tutari").innerText = `-${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(indirimTutari)}`;
+        if (indirimOraniEl) indirimOraniEl.innerText = `%${Math.round(aktifIndirimOrani * 100)}`;
+        if (indirimTutariEl) indirimTutariEl.innerText = `-${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(indirimTutari)}`;
     } else if (indirimSatiri) {
         indirimSatiri.style.display = "none";
     }
+
+    // Genel Toplam
+    const genelToplamEl = document.getElementById("genel-toplam");
+    if (genelToplamEl) genelToplamEl.innerText = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(genelToplam);
 }
 
-// Miktar Güncelle ve Sil
+// C. HEADER SEPET SAYACINI GÜNCELLE
+function sepetGuncelle() {
+    let sepet = JSON.parse(localStorage.getItem(getSepetKey())) || [];
+    const toplamAdet = sepet.reduce((toplam, urun) => toplam + urun.adet, 0);
+    document.querySelectorAll("#sepet-sayac").forEach(el => el.innerText = toplamAdet);
+}
+
+// D. MİKTAR GÜNCELLEME
 function sepetMiktarGuncelle(sepetId, degisim) {
     let sepetKey = getSepetKey();
     let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
@@ -339,6 +223,7 @@ function sepetMiktarGuncelle(sepetId, degisim) {
     }
 }
 
+// E. SEPETTEN SİL
 function sepettenSil(sepetId) {
     let sepetKey = getSepetKey();
     let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
@@ -347,39 +232,125 @@ function sepettenSil(sepetId) {
     sepetSayfasiniDoldur();
     sepetGuncelle();
 }
-
 /* =========================================
-   4. DETAY SAYFASI & SEÇENEKLER
+   3. CHECKOUT VE SİPARİŞ TAMAMLAMA
    ========================================= */
-function detaySayfasiniYukle() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urunId = parseInt(urlParams.get('id'));
-    const urun = urunler.find(u => u.id === urunId);
+function checkoutYukle() {
+    let sepet = JSON.parse(localStorage.getItem(getSepetKey())) || [];
+    const ozetDiv = document.getElementById("checkout-ozet");
 
-    if (urun) {
-        // İçerikleri Doldur
-        document.getElementById("detay-img").src = urun.resim;
-        document.getElementById("detay-baslik").innerText = urun.ad;
-        document.getElementById("detay-aciklama").innerText = urun.aciklama;
-        document.getElementById("detay-fiyat").innerText = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(urun.fiyat);
+    if (ozetDiv) {
+        let araToplam = 0;
+        ozetDiv.innerHTML = "";
 
-        // Galeri ve Yorumlar
-        galeriOlustur(urun.resim, urun.id);
-        yorumListesiniGetir(urunId); // Bu fonksiyonun ismi de değişmiş olabilir, kontrol ettim aşağıda "yorumListesiniGetir" yok, direkt listeleme yapılıyor. Düzeltiyorum.
-        puanlariGuncelle(urun.id); // Puanları göster
-        yorumFormunuAyarla(); // Formun görünürlüğünü ayarla
+        if (sepet.length === 0) {
+            ozetDiv.innerHTML = "<p>Sepetiniz boş.</p>";
+            return;
+        }
 
-        // Seçenekleri Oluştur
-        secenekleriOlustur(urun.secenekler);
+        sepet.forEach(u => {
+            araToplam += u.fiyat * u.adet;
+            ozetDiv.innerHTML += `
+                <div class="ozet-satir">
+                    <span>${u.ad} (x${u.adet})</span>
+                    <span>${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(u.fiyat * u.adet)}</span>
+                </div>`;
+        });
 
-        // Sepet Butonu Bağla
-        const btn = document.getElementById("detay-sepete-ekle-btn");
-        if (btn) btn.onclick = () => detaydanSepeteEkle(urun);
+        ozetDiv.innerHTML += `
+            <div class="ozet-toplam">
+                <span>Toplam</span>
+                <span>${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(araToplam)}</span>
+            </div>`;
     }
 }
 
+function siparisiTamamla() {
+    const baslik = document.getElementById("adres-baslik").value;
+    const sehir = document.getElementById("adres-sehir").value;
+    const acik = document.getElementById("adres-acik").value;
+
+    if (!baslik || !sehir || !acik) {
+        alert("Lütfen adres bilgilerini eksiksiz doldurun.");
+        return;
+    }
+
+    const tamAdres = `${baslik} - ${sehir} (${acik})`;
+
+    // Önce kullanıcı sepetini dene, yoksa misafir sepetini kontrol et
+    let sepetKey = getSepetKey();
+    let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
+
+    // Eğer kullanıcı sepeti boşsa ve misafir sepeti doluysa, onu kullan
+    if (sepet.length === 0) {
+        const misafirSepet = JSON.parse(localStorage.getItem("sepet_misafir")) || [];
+        if (misafirSepet.length > 0) {
+            sepet = misafirSepet;
+            sepetKey = "sepet_misafir"; // Silmek için doğru anahtarı kullan
+        }
+    }
+
+    if (sepet.length === 0) {
+        alert("Sepetiniz boş!");
+        return;
+    }
+
+    const toplamTutar = sepet.reduce((top, urun) => top + (urun.fiyat * urun.adet), 0);
+
+    const siparisVerisi = {
+        adres: tamAdres,
+        toplam: toplamTutar,
+        sepet: sepet
+    };
+
+    // API_CHECKOUT.PHP İLE VERİTABANINA KAYIT
+    fetch('api_checkout.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(siparisVerisi)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert("Siparişiniz Başarıyla Alındı! Sipariş No: #" + data.order_id);
+                localStorage.removeItem(sepetKey); // Kullanılan sepeti temizle
+                localStorage.removeItem("sepet_misafir"); // Misafir sepetini de temizle (varsa)
+                window.location.href = "hesabim.php";
+            } else {
+                alert("Hata: " + data.message);
+                if (data.message.includes("giriş")) window.location.href = "login.php";
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            alert("Bir bağlantı hatası oluştu.");
+        });
+}
+/* =========================================
+   4. DETAY SAYFASI & SEÇENEKLER (GÜNCELLENMİŞ)
+   ========================================= */
+
+// Sayfa yüklendiğinde çalışacak
+document.addEventListener("DOMContentLoaded", () => {
+    // Sadece detay sayfasındaysak ve veri varsa çalıştır
+    if (typeof sayfaUrunVerisi !== 'undefined' && document.getElementById("urun-secenekleri-container")) {
+        // Seçenekleri oluştur
+        secenekleriOlustur(sayfaUrunVerisi.secenekler);
+
+        // Sepete ekle butonunu bağla
+        const btn = document.querySelector(".sepete-ekle-btn"); // Class adını kontrol et
+        if (btn) {
+            // Eski onclick olayını temizle ve yenisini ekle
+            btn.onclick = function () {
+                detaydanSepeteEkle(sayfaUrunVerisi);
+            };
+        }
+    }
+});
+
 function secenekleriOlustur(seceneklerData) {
-    const container = document.getElementById("urun-secenekleri-container");
+    const container = document.getElementById("urun-secenekleri-container"); // HTML'de bu ID'li bir div olmalı!
+    // Eğer HTML'de bu ID yoksa hata vermemesi için oluşturabiliriz veya kontrol ederiz
     if (!container) return;
 
     container.innerHTML = "";
@@ -388,7 +359,8 @@ function secenekleriOlustur(seceneklerData) {
     if (!seceneklerData) return;
 
     for (const [baslik, degerler] of Object.entries(seceneklerData)) {
-        secilenVaryasyonlar[baslik] = degerler[0]; // İlkini seç
+        // İlk değeri varsayılan seç
+        secilenVaryasyonlar[baslik] = degerler[0];
 
         const grup = document.createElement("div");
         grup.className = "secenek-grubu";
@@ -401,14 +373,18 @@ function secenekleriOlustur(seceneklerData) {
             const btn = document.createElement("button");
             btn.className = `varyasyon-btn ${i === 0 ? 'secili' : ''}`;
             btn.innerText = deger;
+
+            // Butona tıklama olayı
             btn.onclick = function () {
+                // Diğer butonların seçili sınıfını kaldır
                 btnDiv.querySelectorAll(".varyasyon-btn").forEach(b => b.classList.remove("secili"));
+                // Buna ekle
                 this.classList.add("secili");
+                // Seçimi güncelle
                 secilenVaryasyonlar[baslik] = deger;
 
-                // Fiyatı Güncelle
-                const urun = urunler.find(u => u.id === parseInt(new URLSearchParams(window.location.search).get('id')));
-                fiyatGuncelle(urun);
+                // Fiyatı Güncelle (Artık global veriden okuyor)
+                fiyatGuncelle(sayfaUrunVerisi);
             };
             btnDiv.appendChild(btn);
         });
@@ -419,72 +395,70 @@ function secenekleriOlustur(seceneklerData) {
 
 function fiyatGuncelle(urun) {
     if (!urun) return;
-    let guncelFiyat = urun.fiyat;
+
+    let guncelFiyat = parseFloat(urun.fiyat);
 
     // Seçili varyasyonların fiyat farklarını ekle
     for (const [baslik, deger] of Object.entries(secilenVaryasyonlar)) {
-        // Anahtar oluştur: "RAM|32GB"
-        const farkKey = `${baslik}|${deger}`;
+        const farkKey = `${baslik}|${deger}`; // Örn: "RAM|32GB"
+
         if (urun.fiyatFarklari && urun.fiyatFarklari[farkKey]) {
             guncelFiyat += parseInt(urun.fiyatFarklari[farkKey]);
         }
     }
 
     const formatliFiyat = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(guncelFiyat);
-    const fiyatLabel = document.getElementById("detay-fiyat");
+    const fiyatLabel = document.querySelector(".detay-fiyat"); // Class selector kullandım
 
-    // Animasyonlu Geçiş (Basit)
-    fiyatLabel.style.opacity = 0;
-    setTimeout(() => {
-        fiyatLabel.innerText = formatliFiyat;
-        fiyatLabel.style.opacity = 1;
-    }, 150);
+    if (fiyatLabel) {
+        // Animasyonlu Geçiş
+        fiyatLabel.style.opacity = 0;
+        setTimeout(() => {
+            fiyatLabel.innerText = formatliFiyat;
+            fiyatLabel.style.opacity = 1;
+        }, 150);
+    }
 }
+
 
 /* =========================================
    5. DİĞER FONKSİYONLAR (GALERİ, LOGIN, KUPON)
    ========================================= */
 /* --- GELİŞMİŞ GALERİ FONKSİYONU (RESİMLERİ GETİRİR) --- */
+
+// HTML'den (PHP'den) tıklanınca çalışan fonksiyon
+function resimDegistir(imgElement) {
+    if (!imgElement) return;
+
+    // 1. Büyük Resmi Bul ve Değiştir
+    const buyukResim = document.getElementById("detay-img");
+    if (buyukResim) {
+        // Küçük resmin src'sini büyük resme ata
+        buyukResim.src = imgElement.src;
+    }
+
+    // 2. Aktif Sınıfı ve Opaklık Yönetimi
+    // Tıklanan resmin içindeki bulunduğu container'daki tüm resimleri al
+    const container = imgElement.parentElement;
+    const tumResimler = container.querySelectorAll("img");
+
+    tumResimler.forEach(img => {
+        img.classList.remove("aktif");
+        img.style.opacity = "0.6"; // Pasif opaklık
+    });
+
+    // Tıklananı aktif yap
+    imgElement.classList.add("aktif");
+    imgElement.style.opacity = "1"; // Tam görünürlük
+}
+
 function galeriOlustur(anaResim, urunId) {
     const container = document.getElementById("galeri-container");
     if (!container) return;
 
     container.innerHTML = ""; // Önce temizle
 
-    // Ürün ID'sine göre resim listesi (Senin dosya isimlerine göre ayarladım)
-    let galeriResimleri = [];
-    const id = parseInt(urunId);
 
-    // YENİ: Otomatik Galeri (Veriden Gelen)
-    const urunVerisi = urunler.find(u => u.id === id);
-    if (urunVerisi && urunVerisi.resimler && urunVerisi.resimler.length > 0) {
-        galeriResimleri = urunVerisi.resimler;
-    } else {
-        // ESKİ: Hardcoded ID Kontrolü (Geriye Dönük Uyumluluk)
-        switch (id) {
-            case 1: // MacBook
-                galeriResimleri = ["../IMG/macbook.jpg", "../IMG/macbook_1.jpg", "../IMG/macbook_2.jpg", "../IMG/macbook_3.jpg"];
-                break;
-            case 2: // iPhone
-                galeriResimleri = ["../IMG/iphone15pro.jpg", "../IMG/iphone15pro_1.jpg", "../IMG/iphone15pro_2.jpg", "../IMG/iphone15pro_3.jpg"];
-                break;
-            case 3: // Kulaklık
-                galeriResimleri = ["../IMG/kulaklik.jpg", "../IMG/kulaklik_1.jpg", "../IMG/kulaklik_2.jpg", "../IMG/kulaklik_3.jpg"];
-                break;
-            case 4: // iPad
-                galeriResimleri = ["../IMG/ipad5air.png", "../IMG/ipad5air_1.png", "../IMG/ipad5air_2.png", "../IMG/ipad5air_3.png"];
-                break;
-            case 5: // Laptop (Dell)
-                galeriResimleri = ["../IMG/notebook.jpg", "../IMG/notebook_1.jpg", "../IMG/notebook_2.jpg", "../IMG/notebook_3.jpg"];
-                break;
-            case 6: // Mouse
-                galeriResimleri = ["../IMG/mouse.jpg", "../IMG/mouse_1.jpg", "../IMG/mouse_2.jpg", "../IMG/mouse_3.jpg"];
-                break;
-            default:
-                // Eğer özel resim yoksa sadece ana resmi koy
-                galeriResimleri = [anaResim];
-        }
-    }
 
     // Resimleri Döngüyle Ekrana Bas
     galeriResimleri.forEach((src, index) => {
@@ -512,13 +486,13 @@ function galeriOlustur(anaResim, urunId) {
 // Yorum ve Giriş Fonksiyonları (Öncekiyle aynı mantıkta sadeleştirildi)
 function oturumHeaderKontrol() {
     const oturum = localStorage.getItem("oturum");
-    const btn = document.querySelector('header a[href="login.html"], header a[href="account.html"]');
+    const btn = document.querySelector('header a[href="login.php"], header a[href="account.php"]');
     if (btn) {
         if (oturum === "aktif") {
-            btn.href = "account.html";
+            btn.href = "account.php";
             btn.innerHTML = '<i class="fa fa-user-circle"></i> Hesabım';
         } else {
-            btn.href = "login.html";
+            btn.href = "login.php";
             btn.innerHTML = '<i class="fa fa-user"></i> Giriş Yap';
         }
     }
@@ -736,7 +710,7 @@ function urunleriListele() {
             <div style="text-align:center; width:100%; padding:50px;">
                 <i class="fa fa-search" style="font-size:40px; color:#cbd5e1; margin-bottom:15px;"></i>
                 <h3>Üzgünüz, aradığınız kriterlere uygun ürün bulamadık.</h3>
-                <p>Lütfen farklı anahtar kelimelerle tekrar deneyin veya <a href="products.html" style="color:blue;">Tüm Ürünleri</a> inceleyin.</p>
+                <p>Lütfen farklı anahtar kelimelerle tekrar deneyin veya <a href="products.php" style="color:blue;">Tüm Ürünleri</a> inceleyin.</p>
             </div>`;
         return;
     }
@@ -753,7 +727,7 @@ function urunleriListele() {
                 </a>
                 <div class="alt-bilgi">
                     <span class="fiyat">${fiyat}</span>
-                    <button onclick="window.location.href='detail.html?id=${u.id}'">İncele</button>
+                    <button onclick="window.location.href='detail.php?id=${u.id}'">İncele</button>
                 </div>
             </div>`;
     });
@@ -846,7 +820,7 @@ function girisYap(event, tip) {
         localStorage.setItem("oturum", "aktif");
         localStorage.setItem("kullanici", JSON.stringify({ ad: "Sistem Yöneticisi", email: email, rol: "admin" }));
         alert("Yönetici girişi başarılı!");
-        window.location.href = "admin.html";
+        window.location.href = "admin.php";
         return;
     }
 
@@ -875,7 +849,7 @@ function girisYap(event, tip) {
     localStorage.setItem("kullanici", JSON.stringify(kayitliUser));
 
     alert(`Hoşgeldiniz, ${kayitliUser.ad}!`);
-    window.location.href = "index.html";
+    window.location.href = "index.php";
 }
 
 // ÇIKIŞ YAP
@@ -883,14 +857,14 @@ function cikisYap() {
     if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
         localStorage.removeItem("oturum");
         // localStorage.removeItem("kullanici"); // İsteğe bağlı: Kullanıcıyı hatırlamak istersen silme
-        window.location.href = "index.html";
+        window.location.href = "index.php";
     }
 }
 
 function adminCikis() {
     if (confirm("Yönetim panelinden çıkmak istediğinize emin misiniz?")) {
         localStorage.removeItem("oturum");
-        window.location.href = "login.html";
+        window.location.href = "login.php";
     }
 }
 
@@ -898,9 +872,9 @@ function adminCikis() {
    7. HESAP VE SİPARİŞ YÖNETİMİ
    ========================================= */
 
-// HESAP SAYFASINI DOLDUR (account.html)
+// HESAP SAYFASINI DOLDUR (account.php)
 document.addEventListener("DOMContentLoaded", () => {
-    if (window.location.pathname.includes("account.html")) {
+    if (window.location.pathname.includes("account.php")) {
         hesapSayfasiniYukle();
     }
 });
@@ -909,7 +883,7 @@ function hesapSayfasiniYukle() {
     const kullanici = JSON.parse(localStorage.getItem("kullanici"));
 
     if (!kullanici) {
-        window.location.href = "login.html";
+        window.location.href = "login.php";
         return;
     }
 
@@ -992,23 +966,31 @@ function adresleriListele(kullanici) {
 
 // Checkout Sayfası Yüklendiğinde
 document.addEventListener("DOMContentLoaded", () => {
-    if (window.location.pathname.includes("checkout.html")) {
-        checkoutYukle();
+    if (window.location.pathname.includes("checkout.php")) {
+        checkoutYukleFull();
     }
 });
 
-function checkoutYukle() {
-    // 1. Kullanıcı Kontrolü
-    const kullanici = JSON.parse(localStorage.getItem("kullanici"));
-    if (!kullanici) {
+function checkoutYukleFull() {
+    // 1. Kullanıcı Kontrolü - PHP Session'dan gelen bilgiyi kullan
+    if (typeof phpKullanici === 'undefined' || !phpKullanici.girisYapti) {
         alert("Sipariş vermek için giriş yapmalısınız.");
-        window.location.href = "login.html";
+        window.location.href = "login.php";
         return;
     }
 
-    // 2. Sipariş Özetini Getir
+    // 2. Sipariş Özetini Getir - Önce kullanıcı sepetini dene, yoksa misafir sepetini
     let sepetKey = getSepetKey();
     let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
+
+    // Eğer kullanıcı sepeti boşsa, misafir sepetini kontrol et
+    if (sepet.length === 0) {
+        const misafirSepet = JSON.parse(localStorage.getItem("sepet_misafir")) || [];
+        if (misafirSepet.length > 0) {
+            sepet = misafirSepet;
+        }
+    }
+
     const ozetDiv = document.getElementById("checkout-ozet");
 
     if (ozetDiv) {
@@ -1093,63 +1075,8 @@ function adresDoldur() {
     }
 }
 
-/* =========================================
-   GÜNCELLENMİŞ SİPARİŞ FONKSİYONU (DATABASE İÇİN)
-   ========================================= */
-function siparisiTamamla() {
-    const baslik = document.getElementById("adres-baslik").value;
-    const sehir = document.getElementById("adres-sehir").value;
-    const acik = document.getElementById("adres-acik").value;
-    const kullanici = JSON.parse(localStorage.getItem("kullanici"));
-    if (!baslik || !sehir || !acik) {
-        alert("Lütfen adres bilgilerini eksiksiz doldurun.");
-        return;
-    }
+/* siparisiTamamla fonksiyonu dosyanın başında tanımlı - burası kaldırıldı */
 
-    const tamAdres = `${baslik} - ${sehir} (${acik})`;
-    let sepet = JSON.parse(localStorage.getItem("sepet")) || [];
-
-    if (sepet.length === 0) {
-        alert("Sepetiniz boş!");
-        return;
-    }
-
-    const toplamTutar = sepet.reduce((top, urun) => top + (urun.fiyat * urun.adet), 0);
-
-    // Veriyi Hazırla
-    const siparisVerisi = {
-        adres: tamAdres,
-        toplam: toplamTutar,
-        sepet: sepet
-    };
-
-    // PHP'ye Gönder (AJAX / Fetch API)
-    fetch('api_checkout.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(siparisVerisi)
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert("Siparişiniz Başarıyla Alındı! Sipariş No: #" + data.order_id);
-                localStorage.removeItem("sepet"); // Sepeti temizle
-                window.location.href = "account.php"; // Profil sayfasına git
-            } else {
-                alert("Hata: " + data.message);
-                if (data.message.includes("giriş")) {
-                    window.location.href = "login.php";
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Hata:', error);
-            alert("Bir bağlantı hatası oluştu.");
-        });
-}
-// Diğer yardımcı fonksiyonlar...
 function adetDegistir(miktar) {
     const input = document.getElementById("urun-adet");
     if (!input) return;
@@ -1603,7 +1530,7 @@ function aramaMotorunuBaslat() {
         if (terim.length > 0) {
             // Ürünler sayfasına 'ara' parametresiyle git
             // encodeURIComponent: Türkçe karakterleri ve boşlukları linke uygun hale getirir
-            window.location.href = `products.html?ara=${encodeURIComponent(terim)}`;
+            window.location.href = "products.php?ara=" + encodeURIComponent(terim);
         }
     }
 

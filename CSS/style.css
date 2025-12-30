@@ -2361,3 +2361,106 @@ footer {
         margin: 0;
     }
 }
+
+/* --- HEADER USER ACTIONS --- */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.05rem;
+    margin-right: 5px;
+}
+
+.user-profile i {
+    font-size: 1.3rem;
+}
+
+.btn-header-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+/* Siparişlerim Butonu (Mavi tonlarında) */
+.btn-orders {
+    background-color: #eff6ff;
+    /* Light Blue */
+    color: #2563eb;
+    /* Blue */
+    border-color: #dbeafe;
+}
+
+.btn-orders:hover {
+    background-color: #2563eb;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+/* Çıkış Yap Butonu (Kırmızı) */
+.btn-logout-client {
+    background-color: #fef2f2;
+    /* Light Red */
+    color: #ef4444;
+    /* Red */
+    border-color: #fee2e2;
+}
+
+.btn-logout-client:hover {
+    background-color: #ef4444;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+}
+
+/* Giriş Yap Butonu */
+.btn-login {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-login:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+}
+
+/* Responsive Düzenleme */
+@media (max-width: 992px) {
+    .user-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-header-action {
+        justify-content: center;
+    }
+
+    .user-profile {
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+}
